@@ -1,0 +1,77 @@
+# GitLab CI/CD Pipeline for Remotion Video Generation
+
+stages:
+  - test
+  - build
+  - render
+
+variables:
+  NODE_VERSION: "20"
+  REMOTION_VERSION: "4.0.0"
+
+# Cache node_modules between jobs
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+    - .npm/
+
+# Template for Node.js setup
+.node_setup: &node_setup
+  image: node:${NODE_VERSION}
+  before_script:
+    - npm ci --cache .npm --prefer-offline
+
+# Lint and type check
+test:lint:
+  <<: *node_setup
+  stage: test
+  script:
+    - npm run test
+  only:
+    - merge_requests
+    - main
+
+# Build Remotion bundle
+build:bundle:
+  <<: *node_setup
+  stage: build
+  script:
+    - npm run build
+  artifacts:
+    paths:
+      - out/
+    expire_in: 1 week
+  only:
+    - main
+    - tags
+
+# Render video (manual trigger)
+render:video:
+  <<: *node_setup
+  stage: render
+  script:
+    - npx remotion render src/index.ts HelloWorld out/video.mp4
+  artifacts:
+    paths:
+      - out/video.mp4
+    expire_in: 1 month
+  when: manual
+  only:
+    - main
+    - tags
+
+# Render with custom props (scheduled)
+render:scheduled:
+  <<: *node_setup
+  stage: render
+  script:
+    - |
+      npx remotion render src/index.ts HelloWorld out/video-$(date +%Y%m%d).mp4 \
+        --props='{"titleText":"Daily Video","titleColor":"#FF0000"}'
+  artifacts:
+    paths:
+      - out/*.mp4
+    expire_in: 1 month
+  only:
+    - schedules
