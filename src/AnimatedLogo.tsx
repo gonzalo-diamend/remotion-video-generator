@@ -5,82 +5,82 @@ import {
   spring,
   useCurrentFrame,
   useVideoConfig,
+  Img,
+  staticFile,
 } from 'remotion';
 
 interface AnimatedLogoProps {
-  logoText: string;
-  accentColor: string;
+  logoText?: string;   // Lo mantenemos opcional por compatibilidad
+  accentColor?: string;
 }
 
-export const AnimatedLogo: React.FC<AnimatedLogoProps> = ({
-  logoText,
-  accentColor,
-}) => {
+export const AnimatedLogo: React.FC<AnimatedLogoProps> = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // Spring animation for entrance
+  // Animación de escala (rebote)
   const scale = spring({
     frame: frame - 10,
     fps,
     config: {
-      damping: 100,
-      stiffness: 200,
-      mass: 0.5,
+      damping: 12,
+      stiffness: 100,
     },
   });
 
-  // Rotation animation
-  const rotation = interpolate(frame, [0, 150], [0, 360], {
-    extrapolateRight: 'clamp',
-  });
-
-  // Opacity fade in
+  // Animación de opacidad
   const opacity = interpolate(frame, [0, 20], [0, 1], {
     extrapolateRight: 'clamp',
   });
 
-  // Color transition
-  const hue = interpolate(frame, [0, 150], [0, 360]);
+  // Animación de rotación suave
+  const rotate = interpolate(frame, [0, 150], [0, 10], {
+    extrapolateRight: 'clamp',
+  });
 
   return (
     <AbsoluteFill
       style={{
-        background: `linear-gradient(135deg, hsl(${hue}, 70%, 50%), hsl(${hue + 60}, 70%, 50%))`,
+        backgroundColor: '#050816', // Fondo oscuro elegante
         justifyContent: 'center',
         alignItems: 'center',
       }}
     >
       <div
         style={{
-          transform: `scale(${scale}) rotate(${rotation}deg)`,
           opacity,
+          transform: `scale(${scale}) rotate(${rotate}deg)`,
         }}
       >
-        <div
+        {/* Aquí cargamos tu logo desde la carpeta public */}
+        <Img
+          src={staticFile('logo.png')}
           style={{
-            backgroundColor: 'white',
-            borderRadius: '50%',
-            width: 300,
-            height: 300,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+            width: 400,          // Ajusta el tamaño según necesites
+            height: 'auto',
+            borderRadius: '50%', // Opcional: si quieres recortarlo circular
+            boxShadow: '0 0 40px rgba(255, 107, 107, 0.4)', // Resplandor acorde a tus colores
           }}
-        >
-          <h1
-            style={{
-              fontSize: 60,
-              fontWeight: 'bold',
-              color: accentColor,
-              margin: 0,
-              textAlign: 'center',
-            }}
-          >
-            {logoText}
-          </h1>
-        </div>
+        />
+      </div>
+
+      {/* Título debajo del logo */}
+      <div
+        style={{
+          marginTop: 40,
+          opacity: interpolate(frame, [30, 60], [0, 1]),
+          transform: `translateY(${interpolate(frame, [30, 60], [20, 0], { extrapolateRight: 'clamp' })}px)`,
+          textAlign: 'center',
+          fontFamily: 'system-ui, sans-serif',
+          color: 'white',
+        }}
+      >
+        <h1 style={{ margin: 0, fontSize: 60, fontWeight: 800, color: 'white' }}>
+          THE QUIZ CHANNEL
+        </h1>
+        <p style={{ margin: '10px 0 0', fontSize: 30, color: '#ccc' }}>
+          Pon a prueba tu mente
+        </p>
       </div>
     </AbsoluteFill>
   );
