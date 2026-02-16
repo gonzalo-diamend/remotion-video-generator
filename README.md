@@ -10,6 +10,7 @@ Proyecto de generación de videos programáticos usando [Remotion](https://www.r
 - ✅ Composición de ejemplo "HelloWorld"
 - ✅ Linting y type checking automatizados
 - ✅ Soporte para props dinámicos
+- ✅ Dataset de 50 quizzes en español (formato render-ready para Remotion)
 
 ## 📋 Requisitos Previos
 
@@ -231,3 +232,16 @@ MIT License - ver el archivo [LICENSE](LICENSE) para más detalles.
 ---
 
 ⭐ Si este proyecto te resulta útil, ¡dale una estrella en GitHub!
+
+
+## 🧠 Dataset automático de quizzes (ES)
+
+Se agregó un generador de 50 videos de quiz en español con formato estructurado para render:
+
+- `src/quiz-schema.ts`: Tipos del payload (`video`, `intro`, `questions`, `outro`, `render`).
+- `src/videos-es.ts`: Generador `spanishQuizVideos` con 50 quizzes únicos y rotación de temas.
+- `src/QuizVertical.tsx`: Composición vertical 1080x1920 para render directo de un payload.
+
+Composición registrada:
+
+- `QuizVerticalAuto` (usa `spanishQuizVideos[0]` por defecto).

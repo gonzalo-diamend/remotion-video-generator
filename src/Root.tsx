@@ -3,6 +3,8 @@ import { Composition, Sequence, useVideoConfig, AbsoluteFill } from 'remotion';
 import { HelloWorld } from './HelloWorld';
 import { AnimatedLogo } from './AnimatedLogo'; // Tu intro con logo
 import { QuizEurope, QuizQuestion } from './QuizEurope';
+import {QuizVertical} from './QuizVertical';
+import {spanishQuizVideos} from './videos-es';
 
 // --- Datos del Quiz ---
 const europeQuestions: QuizQuestion[] = [
@@ -70,7 +72,7 @@ export const RemotionRoot: React.FC = () => {
     <>
       <Composition
         id="HelloWorld"
-        component={HelloWorld}
+        component={HelloWorld as unknown as React.ComponentType<Record<string, unknown>>}
         durationInFrames={150}
         fps={30}
         width={1920}
@@ -84,7 +86,7 @@ export const RemotionRoot: React.FC = () => {
       {/* Intro sola (útil para pruebas) */}
       <Composition
         id="AnimatedLogo"
-        component={AnimatedLogo}
+        component={AnimatedLogo as unknown as React.ComponentType<Record<string, unknown>>}
         durationInFrames={150}
         fps={30}
         width={1920}
@@ -94,7 +96,7 @@ export const RemotionRoot: React.FC = () => {
       {/* Quiz solo (útil para pruebas) */}
       <Composition
         id="QuizEurope"
-        component={QuizEurope}
+        component={QuizEurope as unknown as React.ComponentType<Record<string, unknown>>}
         fps={30}
         width={1920}
         height={1080}
@@ -102,10 +104,21 @@ export const RemotionRoot: React.FC = () => {
         defaultProps={{ questions: europeQuestions }}
       />
 
+
+      <Composition
+        id="QuizVerticalAuto"
+        component={QuizVertical as unknown as React.ComponentType<Record<string, unknown>>}
+        fps={30}
+        width={1080}
+        height={1920}
+        durationInFrames={spanishQuizVideos[0].intro.duration_frames + spanishQuizVideos[0].questions.reduce((acc, q) => acc + q.duration_frames, 0) + spanishQuizVideos[0].outro.duration_frames}
+        defaultProps={{payload: spanishQuizVideos[0]}}
+      />
+
       {/* VIDEO COMPLETO FINAL */}
       <Composition
         id="FullVideoEurope"
-        component={FullVideoComposition}
+        component={FullVideoComposition as unknown as React.ComponentType<Record<string, unknown>>}
         fps={30}
         width={1920}
         height={1080}

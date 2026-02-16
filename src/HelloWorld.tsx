@@ -1,5 +1,5 @@
 import React from 'react';
-import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from 'remotion';
+import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion';
 
 interface HelloWorldProps {
   titleText: string;
@@ -8,8 +8,6 @@ interface HelloWorldProps {
 
 export const HelloWorld: React.FC<HelloWorldProps> = ({ titleText, titleColor }) => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-
   const opacity = interpolate(frame, [0, 30], [0, 1], {
     extrapolateRight: 'clamp',
   });
