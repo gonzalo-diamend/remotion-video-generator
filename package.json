@@ -6,10 +6,10 @@
     "start": "npx remotion studio",
     "build": "npx remotion render src/index.ts",
     "upgrade": "npx remotion upgrade",
-    "test": "npx eslint@8 src --ext ts,tsx,js,jsx && npx -p typescript@5.3.3 tsc --noEmit",
+    "test": "eslint src --ext ts,tsx,js,jsx && tsc --noEmit",
     "render:batch": "bash -lc 'mkdir -p out/videos && for id in $(seq -f \"%03g\" 1 50); do npx remotion render src/index.ts \"QuizVertical_${id}\" \"out/videos/quiz-${id}.mp4\"; done'",
     "render:thumbs": "bash -lc 'mkdir -p out/thumbnails && for id in $(seq -f \"%03g\" 1 50); do npx remotion still src/index.ts \"QuizThumb_${id}\" \"out/thumbnails/quiz-${id}.png\"; done'",
-    "test:unit": "node --import tsx --test tests/**/*.test.ts"
+    "test:unit": "rm -rf .test-dist && tsc -p tsconfig.tests.json && node --test .test-dist/tests/**/*.test.js"
   },
   "repository": {
     "type": "git",
@@ -32,7 +32,6 @@
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.0.0",
     "eslint-plugin-react": "^7.33.0",
-    "typescript": "5.3.3",
-    "tsx": "^4.20.3"
+    "typescript": "5.3.3"
   }
 }
