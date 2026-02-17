@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "description": "Video generation project using Remotion",
   "scripts": {
-    "start": "remotion studio",
-    "build": "remotion render src/index.ts",
-    "upgrade": "remotion upgrade",
-    "test": "eslint src --ext ts,tsx,js,jsx && tsc --noEmit"
+    "start": "npx remotion studio",
+    "build": "npx remotion render src/index.ts",
+    "upgrade": "npx remotion upgrade",
+    "test": "npx eslint@8 src --ext ts,tsx,js,jsx && npx -p typescript@5.3.3 tsc --noEmit",
+    "render:batch": "bash -lc 'mkdir -p out/videos && for id in $(seq -f \"%03g\" 1 50); do npx remotion render src/index.ts \"QuizVertical_${id}\" \"out/videos/quiz-${id}.mp4\"; done'",
+    "render:thumbs": "bash -lc 'mkdir -p out/thumbnails && for id in $(seq -f \"%03g\" 1 50); do npx remotion still src/index.ts \"QuizThumb_${id}\" \"out/thumbnails/quiz-${id}.png\"; done'",
+    "test:unit": "node --import tsx --test tests/**/*.test.ts"
   },
   "repository": {
     "type": "git",
@@ -29,6 +32,7 @@
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.0.0",
     "eslint-plugin-react": "^7.33.0",
-    "typescript": "5.3.3"
+    "typescript": "5.3.3",
+    "tsx": "^4.20.3"
   }
 }
