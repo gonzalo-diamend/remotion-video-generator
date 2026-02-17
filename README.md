@@ -54,6 +54,20 @@ npm run build
 # Renderizar con props personalizados
 npx remotion render src/index.ts HelloWorld out/video.mp4 \
   --props='{"titleText":"Mi Video","titleColor":"#FF6B6B"}'
+
+### Prueba rápida de build (ejecutada localmente)
+
+Puedes probar rápidamente que el pipeline de render funciona con la composición `HelloWorld`.
+
+```bash
+# Ejecuta el build (usa Remotion CLI)
+npm run build -- HelloWorld out/HelloWorld.mp4
+
+# Alternativamente:
+npx remotion render src/index.ts HelloWorld out/HelloWorld.mp4
+```
+
+En este repositorio ejecutamos el comando anterior como prueba y se generó `out/HelloWorld.mp4`.
 ```
 
 ## 📁 Estructura del Proyecto
