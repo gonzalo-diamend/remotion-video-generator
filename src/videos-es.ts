@@ -1,4 +1,6 @@
 import {QuizVideoPayload} from './quiz-schema';
+import {buildHashtags, buildSeoDescription, buildTags} from './quiz-metadata';
+import {buildRenderCatalog} from './render-catalog';
 
 type BankQuestion = {
   question: string;
@@ -223,9 +225,9 @@ export const generateSpanishQuizVideos = (): QuizVideoPayload[] => {
       video: {
         id: `quiz-${String(i + 1).padStart(3, '0')}`,
         title,
-        description: `Quiz viral de ${topic} en español con 12 preguntas progresivas, listo para render automático en Remotion.`,
-        tags: ['quiz', 'trivia', topic],
-        hashtags: ['#quiz', '#trivia', '#challenge'],
+        description: buildSeoDescription(topic, title),
+        tags: buildTags(topic),
+        hashtags: buildHashtags(topic),
         duration_seconds: 550,
         difficulty: 'mixed',
         topic,
@@ -254,3 +256,5 @@ export const generateSpanishQuizVideos = (): QuizVideoPayload[] => {
 };
 
 export const spanishQuizVideos = generateSpanishQuizVideos();
+
+export const quizRenderCatalog = buildRenderCatalog(spanishQuizVideos);

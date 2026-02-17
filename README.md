@@ -178,6 +178,9 @@ npx remotion render src/index.ts MyVideo out/my-video.mp4
 # Ejecutar linting y type checking
 npm test
 
+# Ejecutar tests unitarios (dataset/metadata/catalog)
+npm run test:unit
+
 # Solo linting
 npx eslint src --ext ts,tsx
 
@@ -259,3 +262,32 @@ Se agregó un generador de 50 videos de quiz en español con formato estructurad
 Composición registrada:
 
 - `QuizVerticalAuto` (usa `spanishQuizVideos[0]` por defecto).
+
+
+## 🧰 Render masivo + miniaturas + metadata
+
+Quedó preparado un flujo para renderizar **múltiples videos** y también sus miniaturas:
+
+```bash
+# Ver todas las composiciones disponibles (incluye QuizVertical_001..050 y QuizThumb_001..050)
+npx remotion compositions src/index.ts
+
+# Render batch de videos verticales
+mkdir -p out/videos
+for id in $(seq -f "%03g" 1 50); do
+  npx remotion render src/index.ts "QuizVertical_${id}" "out/videos/quiz-${id}.mp4"
+done
+
+# Render batch de miniaturas
+mkdir -p out/thumbnails
+for id in $(seq -f "%03g" 1 50); do
+  npx remotion still src/index.ts "QuizThumb_${id}" "out/thumbnails/quiz-${id}.png"
+done
+```
+
+Además, cada video ahora se genera con:
+- `description` SEO-friendly
+- `tags` enriquecidos por tópico
+- `hashtags` automáticos
+
+Puedes usar el catálogo `quizRenderCatalog` desde `src/videos-es.ts` para conectar publicación/descarga en tus pipelines.

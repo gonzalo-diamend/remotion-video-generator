@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": ".test-dist",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "types": [
+      "node"
+    ],
+    "lib": [
+      "ES2022"
+    ]
+  },
+  "include": [
+    "tests/**/*.ts",
+    "src/videos-es.ts",
+    "src/quiz-schema.ts",
+    "src/quiz-metadata.ts",
+    "src/render-catalog.ts"
+  ]
+}
