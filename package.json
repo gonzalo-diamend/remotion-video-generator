@@ -9,7 +9,7 @@
     "test": "eslint src --ext ts,tsx,js,jsx && tsc --noEmit",
     "render:batch": "bash -lc 'mkdir -p out/videos && for id in $(seq -f \"%03g\" 1 50); do npx remotion render src/index.ts \"QuizVertical_${id}\" \"out/videos/quiz-${id}.mp4\"; done'",
     "render:thumbs": "bash -lc 'mkdir -p out/thumbnails && for id in $(seq -f \"%03g\" 1 50); do npx remotion still src/index.ts \"QuizThumb_${id}\" \"out/thumbnails/quiz-${id}.png\"; done'",
-    "test:unit": "rm -rf .test-dist && tsc -p tsconfig.tests.json && node --test .test-dist/tests/**/*.test.js"
+    "test:unit": "rm -rf .test-dist && tsc -p tsconfig.tests.json && node --test .test-dist/tests/*.test.js"
   },
   "repository": {
     "type": "git",
