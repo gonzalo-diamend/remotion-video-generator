@@ -54,6 +54,7 @@ npm run build
 # Renderizar con props personalizados
 npx remotion render src/index.ts HelloWorld out/video.mp4 \
   --props='{"titleText":"Mi Video","titleColor":"#FF6B6B"}'
+```
 
 ### Prueba rápida de build (ejecutada localmente)
 
@@ -68,7 +69,6 @@ npx remotion render src/index.ts HelloWorld out/HelloWorld.mp4
 ```
 
 En este repositorio ejecutamos el comando anterior como prueba y se generó `out/HelloWorld.mp4`.
-```
 
 ## 📁 Estructura del Proyecto
 
@@ -170,6 +170,19 @@ export const RemotionRoot: React.FC = () => {
 
 ```bash
 npx remotion render src/index.ts MyVideo out/my-video.mp4
+```
+
+
+### Render shorts
+
+Se agregaron composiciones verticales de shorts virales bajo IDs `short-<id>` (por ejemplo `short-hist-roma-01`).
+
+```bash
+# Renderizar un short puntual
+npx remotion render src/index.ts short-hist-roma-01 out/shorts/hist-roma-01.mp4
+
+# Renderizar los shorts de ejemplo del dataset
+npm run render:shorts
 ```
 
 ## 🧪 Testing

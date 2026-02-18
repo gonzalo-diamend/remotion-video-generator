@@ -1,0 +1,20 @@
+[
+  {
+    "id": "hist-roma-01",
+    "series": "Historia Universal",
+    "level": "Intermedio",
+    "question": "¿En qué año cayó el Imperio Romano de Occidente?",
+    "options": ["476 d.C.", "410 d.C.", "1453 d.C.", "509 a.C."],
+    "correctIndex": 0,
+    "explanation": "La fecha tradicional es 476 d.C., cuando Odoacro depuso a Rómulo Augústulo."
+  },
+  {
+    "id": "hist-revolucion-02",
+    "series": "Historia Universal",
+    "level": "Fácil",
+    "question": "¿Qué evento marcó el inicio de la Revolución Francesa en 1789?",
+    "options": ["La ejecución de Luis XVI", "La Toma de la Bastilla", "El Congreso de Viena", "El Reinado del Terror"],
+    "correctIndex": 1,
+    "explanation": "La toma de la Bastilla (14 de julio de 1789) simbolizó el quiebre del Antiguo Régimen."
+  }
+]

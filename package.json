@@ -9,7 +9,8 @@
     "test": "eslint src --ext ts,tsx,js,jsx && tsc --noEmit",
     "render:batch": "bash -lc 'mkdir -p out/videos && for id in $(seq -f \"%03g\" 1 50); do npx remotion render src/index.ts \"QuizVertical_${id}\" \"out/videos/quiz-${id}.mp4\"; done'",
     "render:thumbs": "bash -lc 'mkdir -p out/thumbnails && for id in $(seq -f \"%03g\" 1 50); do npx remotion still src/index.ts \"QuizThumb_${id}\" \"out/thumbnails/quiz-${id}.png\"; done'",
-    "test:unit": "rm -rf .test-dist && tsc -p tsconfig.tests.json && node --test .test-dist/tests/*.test.js"
+    "test:unit": "rm -rf .test-dist && tsc -p tsconfig.tests.json && node --test .test-dist/tests/*.test.js",
+    "render:shorts": "node -e \"const fs=require('fs'); const items=JSON.parse(fs.readFileSync('data/shorts/history.json','utf8')); fs.mkdirSync('out/shorts',{recursive:true}); const {spawnSync}=require('child_process'); for (const q of items){const id='short-'+q.id; const out='out/shorts/'+q.id+'.mp4'; const r=spawnSync('npx',['remotion','render','src/index.ts',id,out],{stdio:'inherit'}); if(r.status!==0) process.exit(r.status??1);} \""
   },
   "repository": {
     "type": "git",
