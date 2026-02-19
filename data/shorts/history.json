@@ -1,20 +1,702 @@
 [
   {
-    "id": "hist-roma-01",
-    "series": "Historia Universal",
-    "level": "Intermedio",
-    "question": "¿En qué año cayó el Imperio Romano de Occidente?",
-    "options": ["476 d.C.", "410 d.C.", "1453 d.C.", "509 a.C."],
-    "correctIndex": 0,
-    "explanation": "La fecha tradicional es 476 d.C., cuando Odoacro depuso a Rómulo Augústulo."
-  },
-  {
-    "id": "hist-revolucion-02",
+    "id": "hist-001",
     "series": "Historia Universal",
     "level": "Fácil",
-    "question": "¿Qué evento marcó el inicio de la Revolución Francesa en 1789?",
-    "options": ["La ejecución de Luis XVI", "La Toma de la Bastilla", "El Congreso de Viena", "El Reinado del Terror"],
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Caída del Imperio Romano de Occidente",
+      "Inicio del Concilio de Trento",
+      "Revolución Francesa",
+      "Crack de Wall Street"
+    ],
+    "correctIndex": 0,
+    "explanation": "Caída del Imperio Romano de Occidente ocurrió en 476, antes que las otras opciones."
+  },
+  {
+    "id": "hist-002",
+    "series": "Historia Universal",
+    "level": "Intermedio",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Derrota de la Armada Invencible",
+      "Batalla de Waterloo",
+      "Inicio de la Segunda Guerra Mundial",
+      "Coronación de Carlomagno"
+    ],
+    "correctIndex": 3,
+    "explanation": "Coronación de Carlomagno ocurrió en 800, antes que las otras opciones."
+  },
+  {
+    "id": "hist-003",
+    "series": "Historia Universal",
+    "level": "Difícil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Inicio de la Guerra de Secesión",
+      "Desembarco de Normandía",
+      "Batalla de Hastings",
+      "Inicio de la Guerra de los Treinta Años"
+    ],
+    "correctIndex": 2,
+    "explanation": "Batalla de Hastings ocurrió en 1066, antes que las otras opciones."
+  },
+  {
+    "id": "hist-004",
+    "series": "Historia Universal",
+    "level": "Fácil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Fin de la Segunda Guerra Mundial",
+      "Firma de la Carta Magna",
+      "Paz de Westfalia",
+      "Unificación de Alemania"
+    ],
     "correctIndex": 1,
-    "explanation": "La toma de la Bastilla (14 de julio de 1789) simbolizó el quiebre del Antiguo Régimen."
+    "explanation": "Firma de la Carta Magna ocurrió en 1215, antes que las otras opciones."
+  },
+  {
+    "id": "hist-005",
+    "series": "Historia Universal",
+    "level": "Intermedio",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Caída de Constantinopla",
+      "Revolución Gloriosa en Inglaterra",
+      "Inicio de la Primera Guerra Mundial",
+      "Fundación de la ONU"
+    ],
+    "correctIndex": 0,
+    "explanation": "Caída de Constantinopla ocurrió en 1453, antes que las otras opciones."
+  },
+  {
+    "id": "hist-006",
+    "series": "Historia Universal",
+    "level": "Difícil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Independencia de Estados Unidos",
+      "Revolución Rusa",
+      "Inicio de la Guerra Fría (Doctrina Truman)",
+      "Llegada de Colón a América"
+    ],
+    "correctIndex": 3,
+    "explanation": "Llegada de Colón a América ocurrió en 1492, antes que las otras opciones."
+  },
+  {
+    "id": "hist-007",
+    "series": "Historia Universal",
+    "level": "Fácil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Crack de Wall Street",
+      "Revolución Cubana",
+      "Publicación de las 95 tesis",
+      "Revolución Francesa"
+    ],
+    "correctIndex": 2,
+    "explanation": "Publicación de las 95 tesis ocurrió en 1517, antes que las otras opciones."
+  },
+  {
+    "id": "hist-008",
+    "series": "Historia Universal",
+    "level": "Intermedio",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Llegada del hombre a la Luna",
+      "Inicio del Concilio de Trento",
+      "Batalla de Waterloo",
+      "Inicio de la Segunda Guerra Mundial"
+    ],
+    "correctIndex": 1,
+    "explanation": "Inicio del Concilio de Trento ocurrió en 1545, antes que las otras opciones."
+  },
+  {
+    "id": "hist-009",
+    "series": "Historia Universal",
+    "level": "Difícil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Derrota de la Armada Invencible",
+      "Inicio de la Guerra de Secesión",
+      "Desembarco de Normandía",
+      "Caída del Muro de Berlín"
+    ],
+    "correctIndex": 0,
+    "explanation": "Derrota de la Armada Invencible ocurrió en 1588, antes que las otras opciones."
+  },
+  {
+    "id": "hist-010",
+    "series": "Historia Universal",
+    "level": "Fácil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Unificación de Alemania",
+      "Fin de la Segunda Guerra Mundial",
+      "Disolución de la URSS",
+      "Inicio de la Guerra de los Treinta Años"
+    ],
+    "correctIndex": 3,
+    "explanation": "Inicio de la Guerra de los Treinta Años ocurrió en 1618, antes que las otras opciones."
+  },
+  {
+    "id": "hist-011",
+    "series": "Historia Universal",
+    "level": "Intermedio",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Fundación de la ONU",
+      "Creación del euro (circulación)",
+      "Paz de Westfalia",
+      "Inicio de la Primera Guerra Mundial"
+    ],
+    "correctIndex": 2,
+    "explanation": "Paz de Westfalia ocurrió en 1648, antes que las otras opciones."
+  },
+  {
+    "id": "hist-012",
+    "series": "Historia Universal",
+    "level": "Difícil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Caída del Imperio Romano de Occidente",
+      "Revolución Gloriosa en Inglaterra",
+      "Revolución Rusa",
+      "Inicio de la Guerra Fría (Doctrina Truman)"
+    ],
+    "correctIndex": 0,
+    "explanation": "Caída del Imperio Romano de Occidente ocurrió en 476, antes que las otras opciones."
+  },
+  {
+    "id": "hist-013",
+    "series": "Historia Universal",
+    "level": "Fácil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Independencia de Estados Unidos",
+      "Crack de Wall Street",
+      "Revolución Cubana",
+      "Coronación de Carlomagno"
+    ],
+    "correctIndex": 3,
+    "explanation": "Coronación de Carlomagno ocurrió en 800, antes que las otras opciones."
+  },
+  {
+    "id": "hist-014",
+    "series": "Historia Universal",
+    "level": "Intermedio",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Inicio de la Segunda Guerra Mundial",
+      "Llegada del hombre a la Luna",
+      "Batalla de Hastings",
+      "Revolución Francesa"
+    ],
+    "correctIndex": 2,
+    "explanation": "Batalla de Hastings ocurrió en 1066, antes que las otras opciones."
+  },
+  {
+    "id": "hist-015",
+    "series": "Historia Universal",
+    "level": "Difícil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Caída del Muro de Berlín",
+      "Firma de la Carta Magna",
+      "Batalla de Waterloo",
+      "Desembarco de Normandía"
+    ],
+    "correctIndex": 1,
+    "explanation": "Firma de la Carta Magna ocurrió en 1215, antes que las otras opciones."
+  },
+  {
+    "id": "hist-016",
+    "series": "Historia Universal",
+    "level": "Fácil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Caída de Constantinopla",
+      "Inicio de la Guerra de Secesión",
+      "Fin de la Segunda Guerra Mundial",
+      "Disolución de la URSS"
+    ],
+    "correctIndex": 0,
+    "explanation": "Caída de Constantinopla ocurrió en 1453, antes que las otras opciones."
+  },
+  {
+    "id": "hist-017",
+    "series": "Historia Universal",
+    "level": "Intermedio",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Unificación de Alemania",
+      "Fundación de la ONU",
+      "Creación del euro (circulación)",
+      "Llegada de Colón a América"
+    ],
+    "correctIndex": 3,
+    "explanation": "Llegada de Colón a América ocurrió en 1492, antes que las otras opciones."
+  },
+  {
+    "id": "hist-018",
+    "series": "Historia Universal",
+    "level": "Difícil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Inicio de la Guerra Fría (Doctrina Truman)",
+      "Caída del Imperio Romano de Occidente",
+      "Publicación de las 95 tesis",
+      "Inicio de la Primera Guerra Mundial"
+    ],
+    "correctIndex": 1,
+    "explanation": "Caída del Imperio Romano de Occidente ocurrió en 476, antes que las otras opciones."
+  },
+  {
+    "id": "hist-019",
+    "series": "Historia Universal",
+    "level": "Fácil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Coronación de Carlomagno",
+      "Inicio del Concilio de Trento",
+      "Revolución Rusa",
+      "Revolución Cubana"
+    ],
+    "correctIndex": 0,
+    "explanation": "Coronación de Carlomagno ocurrió en 800, antes que las otras opciones."
+  },
+  {
+    "id": "hist-020",
+    "series": "Historia Universal",
+    "level": "Intermedio",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Derrota de la Armada Invencible",
+      "Crack de Wall Street",
+      "Llegada del hombre a la Luna",
+      "Batalla de Hastings"
+    ],
+    "correctIndex": 3,
+    "explanation": "Batalla de Hastings ocurrió en 1066, antes que las otras opciones."
+  },
+  {
+    "id": "hist-021",
+    "series": "Historia Universal",
+    "level": "Difícil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Inicio de la Segunda Guerra Mundial",
+      "Caída del Muro de Berlín",
+      "Firma de la Carta Magna",
+      "Inicio de la Guerra de los Treinta Años"
+    ],
+    "correctIndex": 2,
+    "explanation": "Firma de la Carta Magna ocurrió en 1215, antes que las otras opciones."
+  },
+  {
+    "id": "hist-022",
+    "series": "Historia Universal",
+    "level": "Fácil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Disolución de la URSS",
+      "Caída de Constantinopla",
+      "Paz de Westfalia",
+      "Desembarco de Normandía"
+    ],
+    "correctIndex": 1,
+    "explanation": "Caída de Constantinopla ocurrió en 1453, antes que las otras opciones."
+  },
+  {
+    "id": "hist-023",
+    "series": "Historia Universal",
+    "level": "Intermedio",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Llegada de Colón a América",
+      "Revolución Gloriosa en Inglaterra",
+      "Fin de la Segunda Guerra Mundial",
+      "Creación del euro (circulación)"
+    ],
+    "correctIndex": 0,
+    "explanation": "Llegada de Colón a América ocurrió en 1492, antes que las otras opciones."
+  },
+  {
+    "id": "hist-024",
+    "series": "Historia Universal",
+    "level": "Difícil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Independencia de Estados Unidos",
+      "Fundación de la ONU",
+      "Caída del Imperio Romano de Occidente",
+      "Publicación de las 95 tesis"
+    ],
+    "correctIndex": 2,
+    "explanation": "Caída del Imperio Romano de Occidente ocurrió en 476, antes que las otras opciones."
+  },
+  {
+    "id": "hist-025",
+    "series": "Historia Universal",
+    "level": "Fácil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Inicio de la Guerra Fría (Doctrina Truman)",
+      "Coronación de Carlomagno",
+      "Inicio del Concilio de Trento",
+      "Revolución Francesa"
+    ],
+    "correctIndex": 1,
+    "explanation": "Coronación de Carlomagno ocurrió en 800, antes que las otras opciones."
+  },
+  {
+    "id": "hist-026",
+    "series": "Historia Universal",
+    "level": "Intermedio",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Batalla de Hastings",
+      "Derrota de la Armada Invencible",
+      "Batalla de Waterloo",
+      "Revolución Cubana"
+    ],
+    "correctIndex": 0,
+    "explanation": "Batalla de Hastings ocurrió en 1066, antes que las otras opciones."
+  },
+  {
+    "id": "hist-027",
+    "series": "Historia Universal",
+    "level": "Difícil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Inicio de la Guerra de los Treinta Años",
+      "Inicio de la Guerra de Secesión",
+      "Llegada del hombre a la Luna",
+      "Firma de la Carta Magna"
+    ],
+    "correctIndex": 3,
+    "explanation": "Firma de la Carta Magna ocurrió en 1215, antes que las otras opciones."
+  },
+  {
+    "id": "hist-028",
+    "series": "Historia Universal",
+    "level": "Fácil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Unificación de Alemania",
+      "Caída del Muro de Berlín",
+      "Caída de Constantinopla",
+      "Paz de Westfalia"
+    ],
+    "correctIndex": 2,
+    "explanation": "Caída de Constantinopla ocurrió en 1453, antes que las otras opciones."
+  },
+  {
+    "id": "hist-029",
+    "series": "Historia Universal",
+    "level": "Intermedio",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Disolución de la URSS",
+      "Llegada de Colón a América",
+      "Revolución Gloriosa en Inglaterra",
+      "Inicio de la Primera Guerra Mundial"
+    ],
+    "correctIndex": 1,
+    "explanation": "Llegada de Colón a América ocurrió en 1492, antes que las otras opciones."
+  },
+  {
+    "id": "hist-030",
+    "series": "Historia Universal",
+    "level": "Difícil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Publicación de las 95 tesis",
+      "Independencia de Estados Unidos",
+      "Revolución Rusa",
+      "Creación del euro (circulación)"
+    ],
+    "correctIndex": 0,
+    "explanation": "Publicación de las 95 tesis ocurrió en 1517, antes que las otras opciones."
+  },
+  {
+    "id": "hist-031",
+    "series": "Historia Universal",
+    "level": "Fácil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Revolución Francesa",
+      "Crack de Wall Street",
+      "Caída del Imperio Romano de Occidente",
+      "Inicio del Concilio de Trento"
+    ],
+    "correctIndex": 2,
+    "explanation": "Caída del Imperio Romano de Occidente ocurrió en 476, antes que las otras opciones."
+  },
+  {
+    "id": "hist-032",
+    "series": "Historia Universal",
+    "level": "Intermedio",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Inicio de la Segunda Guerra Mundial",
+      "Coronación de Carlomagno",
+      "Derrota de la Armada Invencible",
+      "Batalla de Waterloo"
+    ],
+    "correctIndex": 1,
+    "explanation": "Coronación de Carlomagno ocurrió en 800, antes que las otras opciones."
+  },
+  {
+    "id": "hist-033",
+    "series": "Historia Universal",
+    "level": "Difícil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Batalla de Hastings",
+      "Inicio de la Guerra de los Treinta Años",
+      "Inicio de la Guerra de Secesión",
+      "Desembarco de Normandía"
+    ],
+    "correctIndex": 0,
+    "explanation": "Batalla de Hastings ocurrió en 1066, antes que las otras opciones."
+  },
+  {
+    "id": "hist-034",
+    "series": "Historia Universal",
+    "level": "Fácil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Paz de Westfalia",
+      "Unificación de Alemania",
+      "Fin de la Segunda Guerra Mundial",
+      "Firma de la Carta Magna"
+    ],
+    "correctIndex": 3,
+    "explanation": "Firma de la Carta Magna ocurrió en 1215, antes que las otras opciones."
+  },
+  {
+    "id": "hist-035",
+    "series": "Historia Universal",
+    "level": "Intermedio",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Inicio de la Primera Guerra Mundial",
+      "Fundación de la ONU",
+      "Caída de Constantinopla",
+      "Revolución Gloriosa en Inglaterra"
+    ],
+    "correctIndex": 2,
+    "explanation": "Caída de Constantinopla ocurrió en 1453, antes que las otras opciones."
+  },
+  {
+    "id": "hist-036",
+    "series": "Historia Universal",
+    "level": "Difícil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Inicio de la Guerra Fría (Doctrina Truman)",
+      "Llegada de Colón a América",
+      "Independencia de Estados Unidos",
+      "Revolución Rusa"
+    ],
+    "correctIndex": 1,
+    "explanation": "Llegada de Colón a América ocurrió en 1492, antes que las otras opciones."
+  },
+  {
+    "id": "hist-037",
+    "series": "Historia Universal",
+    "level": "Fácil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Publicación de las 95 tesis",
+      "Revolución Francesa",
+      "Crack de Wall Street",
+      "Revolución Cubana"
+    ],
+    "correctIndex": 0,
+    "explanation": "Publicación de las 95 tesis ocurrió en 1517, antes que las otras opciones."
+  },
+  {
+    "id": "hist-038",
+    "series": "Historia Universal",
+    "level": "Intermedio",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Batalla de Waterloo",
+      "Inicio de la Segunda Guerra Mundial",
+      "Llegada del hombre a la Luna",
+      "Inicio del Concilio de Trento"
+    ],
+    "correctIndex": 3,
+    "explanation": "Inicio del Concilio de Trento ocurrió en 1545, antes que las otras opciones."
+  },
+  {
+    "id": "hist-039",
+    "series": "Historia Universal",
+    "level": "Difícil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Desembarco de Normandía",
+      "Caída del Muro de Berlín",
+      "Derrota de la Armada Invencible",
+      "Inicio de la Guerra de Secesión"
+    ],
+    "correctIndex": 2,
+    "explanation": "Derrota de la Armada Invencible ocurrió en 1588, antes que las otras opciones."
+  },
+  {
+    "id": "hist-040",
+    "series": "Historia Universal",
+    "level": "Fácil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Disolución de la URSS",
+      "Inicio de la Guerra de los Treinta Años",
+      "Unificación de Alemania",
+      "Fin de la Segunda Guerra Mundial"
+    ],
+    "correctIndex": 1,
+    "explanation": "Inicio de la Guerra de los Treinta Años ocurrió en 1618, antes que las otras opciones."
+  },
+  {
+    "id": "hist-041",
+    "series": "Historia Universal",
+    "level": "Intermedio",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Paz de Westfalia",
+      "Inicio de la Primera Guerra Mundial",
+      "Fundación de la ONU",
+      "Creación del euro (circulación)"
+    ],
+    "correctIndex": 0,
+    "explanation": "Paz de Westfalia ocurrió en 1648, antes que las otras opciones."
+  },
+  {
+    "id": "hist-042",
+    "series": "Historia Universal",
+    "level": "Difícil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Revolución Rusa",
+      "Inicio de la Guerra Fría (Doctrina Truman)",
+      "Caída del Imperio Romano de Occidente",
+      "Revolución Gloriosa en Inglaterra"
+    ],
+    "correctIndex": 2,
+    "explanation": "Caída del Imperio Romano de Occidente ocurrió en 476, antes que las otras opciones."
+  },
+  {
+    "id": "hist-043",
+    "series": "Historia Universal",
+    "level": "Fácil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Revolución Cubana",
+      "Coronación de Carlomagno",
+      "Independencia de Estados Unidos",
+      "Crack de Wall Street"
+    ],
+    "correctIndex": 1,
+    "explanation": "Coronación de Carlomagno ocurrió en 800, antes que las otras opciones."
+  },
+  {
+    "id": "hist-044",
+    "series": "Historia Universal",
+    "level": "Intermedio",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Batalla de Hastings",
+      "Revolución Francesa",
+      "Inicio de la Segunda Guerra Mundial",
+      "Llegada del hombre a la Luna"
+    ],
+    "correctIndex": 0,
+    "explanation": "Batalla de Hastings ocurrió en 1066, antes que las otras opciones."
+  },
+  {
+    "id": "hist-045",
+    "series": "Historia Universal",
+    "level": "Difícil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Batalla de Waterloo",
+      "Desembarco de Normandía",
+      "Caída del Muro de Berlín",
+      "Firma de la Carta Magna"
+    ],
+    "correctIndex": 3,
+    "explanation": "Firma de la Carta Magna ocurrió en 1215, antes que las otras opciones."
+  },
+  {
+    "id": "hist-046",
+    "series": "Historia Universal",
+    "level": "Fácil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Fin de la Segunda Guerra Mundial",
+      "Disolución de la URSS",
+      "Caída de Constantinopla",
+      "Inicio de la Guerra de Secesión"
+    ],
+    "correctIndex": 2,
+    "explanation": "Caída de Constantinopla ocurrió en 1453, antes que las otras opciones."
+  },
+  {
+    "id": "hist-047",
+    "series": "Historia Universal",
+    "level": "Intermedio",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Creación del euro (circulación)",
+      "Llegada de Colón a América",
+      "Unificación de Alemania",
+      "Fundación de la ONU"
+    ],
+    "correctIndex": 1,
+    "explanation": "Llegada de Colón a América ocurrió en 1492, antes que las otras opciones."
+  },
+  {
+    "id": "hist-048",
+    "series": "Historia Universal",
+    "level": "Difícil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Publicación de las 95 tesis",
+      "Inicio de la Primera Guerra Mundial",
+      "Inicio de la Guerra Fría (Doctrina Truman)",
+      "Caída del Imperio Romano de Occidente"
+    ],
+    "correctIndex": 3,
+    "explanation": "Caída del Imperio Romano de Occidente ocurrió en 476, antes que las otras opciones."
+  },
+  {
+    "id": "hist-049",
+    "series": "Historia Universal",
+    "level": "Fácil",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Revolución Rusa",
+      "Revolución Cubana",
+      "Coronación de Carlomagno",
+      "Inicio del Concilio de Trento"
+    ],
+    "correctIndex": 2,
+    "explanation": "Coronación de Carlomagno ocurrió en 800, antes que las otras opciones."
+  },
+  {
+    "id": "hist-050",
+    "series": "Historia Universal",
+    "level": "Intermedio",
+    "question": "¿Cuál de estos hechos ocurrió primero?",
+    "options": [
+      "Llegada del hombre a la Luna",
+      "Batalla de Hastings",
+      "Derrota de la Armada Invencible",
+      "Crack de Wall Street"
+    ],
+    "correctIndex": 1,
+    "explanation": "Batalla de Hastings ocurrió en 1066, antes que las otras opciones."
   }
 ]

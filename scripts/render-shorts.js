@@ -5,6 +5,7 @@ const {spawnSync} = require('child_process');
 const dataset = JSON.parse(fs.readFileSync('data/shorts/history.json', 'utf8'));
 const retriesArg = process.argv.slice(2).find((arg) => arg.startsWith('--retries='));
 const retries = retriesArg ? Number(retriesArg.split('=')[1]) : 1;
+const force = process.argv.includes('--force');
 const browserExecutable = process.env.REMOTION_BROWSER_EXECUTABLE;
 
 if (!Array.isArray(dataset)) {
@@ -21,7 +22,7 @@ for (const [index, short] of dataset.entries()) {
   const compositionId = `short-${short.id}`;
   const outputPath = `out/shorts/${short.id}.mp4`;
 
-  if (fs.existsSync(outputPath)) {
+  if (fs.existsSync(outputPath) && !force) {
     skipped.push(compositionId);
     console.log(`[shorts] skip ${compositionId} (${index + 1}/${dataset.length})`);
     continue;
