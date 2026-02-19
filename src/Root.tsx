@@ -135,7 +135,7 @@ export const RemotionRoot: React.FC = () => {
         return (
           <React.Fragment key={payload.video.id}>
             <Composition
-              id={`QuizVertical_${item}`}
+              id={`QuizVertical-${item}`}
               component={QuizVertical as unknown as React.ComponentType<Record<string, unknown>>}
               fps={30}
               width={1080}
@@ -145,7 +145,7 @@ export const RemotionRoot: React.FC = () => {
             />
 
             <Composition
-              id={`QuizThumb_${item}`}
+              id={`QuizThumb-${item}`}
               component={QuizThumbnail as unknown as React.ComponentType<Record<string, unknown>>}
               fps={30}
               width={1280}

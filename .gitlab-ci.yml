@@ -40,7 +40,7 @@ test:smoke-render:
   stage: test
   script:
     - npx remotion render src/index.ts HelloWorld out/smoke-hello.mp4 --browser-executable "$REMOTION_BROWSER_EXECUTABLE"
-    - npx remotion still src/index.ts QuizThumb_001 out/smoke-thumb.png --browser-executable "$REMOTION_BROWSER_EXECUTABLE"
+    - npx remotion still src/index.ts QuizThumb-001 out/smoke-thumb.png --browser-executable "$REMOTION_BROWSER_EXECUTABLE"
   artifacts:
     paths:
       - out/smoke-hello.mp4

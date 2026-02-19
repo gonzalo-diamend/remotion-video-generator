@@ -24,14 +24,14 @@ test('quizRenderCatalog mapea composiciones y outputs por índice', () => {
   assert.equal(quizRenderCatalog.length, 50);
 
   const first = quizRenderCatalog[0];
-  assert.equal(first.compositionId, 'QuizVertical_001');
-  assert.equal(first.thumbnailCompositionId, 'QuizThumb_001');
+  assert.equal(first.compositionId, 'QuizVertical-001');
+  assert.equal(first.thumbnailCompositionId, 'QuizThumb-001');
   assert.equal(first.videoOutputPath, 'out/videos/quiz-001.mp4');
   assert.equal(first.thumbnailOutputPath, 'out/thumbnails/quiz-001.png');
 
   const last = quizRenderCatalog[49];
-  assert.equal(last.compositionId, 'QuizVertical_050');
-  assert.equal(last.thumbnailCompositionId, 'QuizThumb_050');
+  assert.equal(last.compositionId, 'QuizVertical-050');
+  assert.equal(last.thumbnailCompositionId, 'QuizThumb-050');
   assert.equal(last.videoOutputPath, 'out/videos/quiz-050.mp4');
   assert.equal(last.thumbnailOutputPath, 'out/thumbnails/quiz-050.png');
 });

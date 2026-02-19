@@ -41,7 +41,7 @@ const skipped = [];
 
 for (let id = from; id <= to; id++) {
   const item = String(id).padStart(3, '0');
-  const compositionId = mode === 'videos' ? `QuizVertical_${item}` : `QuizThumb_${item}`;
+  const compositionId = mode === 'videos' ? `QuizVertical-${item}` : `QuizThumb-${item}`;
   const extension = mode === 'videos' ? 'mp4' : 'png';
   const outputPath = `${outDir}/quiz-${item}.${extension}`;
 

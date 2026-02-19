@@ -298,19 +298,19 @@ Composición registrada:
 Quedó preparado un flujo para renderizar **múltiples videos** y también sus miniaturas:
 
 ```bash
-# Ver todas las composiciones disponibles (incluye QuizVertical_001..050 y QuizThumb_001..050)
+# Ver todas las composiciones disponibles (incluye QuizVertical-001..050 y QuizThumb-001..050)
 npx remotion compositions src/index.ts
 
 # Render batch de videos verticales
 mkdir -p out/videos
 for id in $(seq -f "%03g" 1 50); do
-  npx remotion render src/index.ts "QuizVertical_${id}" "out/videos/quiz-${id}.mp4"
+  npx remotion render src/index.ts "QuizVertical-${id}" "out/videos/quiz-${id}.mp4"
 done
 
 # Render batch de miniaturas
 mkdir -p out/thumbnails
 for id in $(seq -f "%03g" 1 50); do
-  npx remotion still src/index.ts "QuizThumb_${id}" "out/thumbnails/quiz-${id}.png"
+  npx remotion still src/index.ts "QuizThumb-${id}" "out/thumbnails/quiz-${id}.png"
 done
 ```
 
