@@ -183,6 +183,11 @@ npx remotion render src/index.ts short-hist-roma-01 out/shorts/hist-roma-01.mp4
 
 # Renderizar los shorts de ejemplo del dataset
 npm run render:shorts
+
+# Render incremental (salta outputs existentes) + reintentos
+node scripts/render-batch.js --mode=videos --from=1 --to=50 --retries=2
+node scripts/render-batch.js --mode=thumbs --from=1 --to=50 --retries=2
+node scripts/render-shorts.js --retries=2
 ```
 
 ## 🧪 Testing
@@ -199,6 +204,17 @@ npx eslint src --ext ts,tsx
 
 # Solo type checking
 npx tsc --noEmit
+```
+
+
+
+### Browser executable en CI/headless
+
+Para evitar descargas dinámicas de Chromium en entornos restringidos, puedes apuntar Remotion a un binario ya instalado:
+
+```bash
+export REMOTION_BROWSER_EXECUTABLE=/usr/bin/chromium
+npx remotion render src/index.ts HelloWorld out/video.mp4 --browser-executable "$REMOTION_BROWSER_EXECUTABLE"
 ```
 
 ## 🔧 Configuración Avanzada

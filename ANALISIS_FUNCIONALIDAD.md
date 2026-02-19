@@ -1,47 +1,61 @@
 # Análisis de funcionalidad del proyecto
 
-## Estado actual (qué ya está)
+## Estado actual validado
 
-- Generación de 50 payloads de videos en español con metadata (`description`, `tags`, `hashtags`).
-- Composiciones registradas para video vertical por lote (`QuizVertical_001..050`).
-- Composiciones registradas para miniaturas (`QuizThumb_001..050`).
-- Scripts para render masivo de videos y miniaturas.
+Después de revisar código, scripts y pipeline, el proyecto quedó **funcional en validaciones + más robusto para CI/render**:
 
-## Qué faltaba para que quede funcional de punta a punta
+- Genera 50 payloads de quiz en español con metadata SEO y catálogo de render.
+- Registra composiciones para videos verticales, miniaturas, shorts y demos.
+- Tiene validación de calidad mínima en CI/local:
+  - lint + typecheck (`npm test`),
+  - tests unitarios (`npm run test:unit`).
+- Se agregó smoke render automático en PR (GitHub Actions + GitLab CI).
+- Se configuró uso de navegador del sistema en CI con `--browser-executable` para reducir dependencia de descarga dinámica.
 
-### 1) Ejecución local robusta sin CLI global
+## Avances implementados sobre prioridades
 
-**Problema:** scripts dependían de `remotion` global en PATH.
+### 1) Alta — Chromium/headless en CI
 
-**Solución aplicada:** se cambió a `npx remotion ...` en `start`, `build` y `upgrade`.
+✅ Implementado:
 
-### 2) Validación de lint en entornos con ESLint 9
+- GitHub Actions instala Chrome estable y lo usa explícitamente en renders.
+- GitLab CI instala Chromium y lo inyecta vía `REMOTION_BROWSER_EXECUTABLE`.
+- Los comandos de render usan `--browser-executable`.
 
-**Problema:** `npm test` fallaba porque ESLint 9 espera `eslint.config.*` (flat config).
+### 2) Alta — Smoke render automático en PR
 
-**Solución aplicada:** se forzó el uso de `eslint@8` en el script de test para mantener compatibilidad con la configuración legacy `.eslintrc.json`.
+✅ Implementado:
 
-### 3) Flujo operativo recomendado (pendiente de entorno)
+- Job `smoke-render` en GitHub Actions para `pull_request`.
+- Job `test:smoke-render` en GitLab para MRs/main.
+- Smoke actual: `HelloWorld` (video) + `QuizThumb_001` (still).
 
-Para que el proyecto quede 100% operativo en CI/CD o local todavía se necesita:
+### 3) Media — Validación de schema en runtime
 
-- Instalar dependencias sin inconsistencias (`npm ci`) en un entorno estable.
-- Ejecutar validaciones:
-  - `npm test`
-  - `npx remotion compositions src/index.ts`
-- Render de lote:
-  - `npm run render:batch`
-  - `npm run render:thumbs`
+✅ Implementado:
 
-## Checklist final para producción
+- Nueva capa `runtime-validation` con validaciones explícitas para:
+  - dataset de shorts (`validateShortsDataset`),
+  - payloads de quizzes (`validateQuizVideoPayloads`).
+- Integración en runtime:
+  - `Root.tsx` valida dataset antes de registrar composiciones de shorts.
+  - `videos-es.ts` valida payloads generados antes de exportarlos.
 
-- [ ] Dependencias instaladas correctamente.
-- [ ] Lint y typecheck en verde.
-- [ ] Render de 50 videos finaliza sin errores.
-- [ ] Render de 50 miniaturas finaliza sin errores.
-- [ ] Carpeta `out/videos` lista para descarga/publicación.
-- [ ] Carpeta `out/thumbnails` lista para descarga/publicación.
+### 4) Media/Baja — Operación batch
 
-## Nota
+✅ Implementado:
 
-Si en CI aparece error de Chromium/renderer, agregar configuración de entorno para Remotion (binarios/headless) y cachear `node_modules` para evitar reinstalaciones incompletas.
+- Scripts dedicados de lote:
+  - `scripts/render-batch.js` (videos/thumbs),
+  - `scripts/render-shorts.js` (shorts).
+- Mejoras incluidas:
+  - resumen de ejecución (success/failed/skipped),
+  - reintentos por composición,
+  - modo incremental (omite outputs existentes),
+  - rango configurable (`--from`, `--to`) para parciales.
+
+## Pendientes recomendados (siguiente iteración)
+
+- Guardar métricas históricas de lote (tiempos por composición) para observabilidad fina.
+- Añadir job nocturno de render completo (50 videos + 50 thumbs) con artefactos y reporte.
+- Incorporar validación semántica adicional (por ejemplo duración total esperada por video).

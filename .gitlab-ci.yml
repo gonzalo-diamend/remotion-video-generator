@@ -8,6 +8,7 @@ stages:
 variables:
   NODE_VERSION: "20"
   REMOTION_VERSION: "4.0.0"
+  REMOTION_BROWSER_EXECUTABLE: "/usr/bin/chromium"
 
 # Cache node_modules between jobs
 cache:
@@ -20,6 +21,7 @@ cache:
 .node_setup: &node_setup
   image: node:${NODE_VERSION}
   before_script:
+    - apt-get update && apt-get install -y chromium
     - npm ci --cache .npm --prefer-offline
 
 # Lint and type check
@@ -32,12 +34,28 @@ test:lint:
     - merge_requests
     - main
 
+# Smoke render for PR reliability
+test:smoke-render:
+  <<: *node_setup
+  stage: test
+  script:
+    - npx remotion render src/index.ts HelloWorld out/smoke-hello.mp4 --browser-executable "$REMOTION_BROWSER_EXECUTABLE"
+    - npx remotion still src/index.ts QuizThumb_001 out/smoke-thumb.png --browser-executable "$REMOTION_BROWSER_EXECUTABLE"
+  artifacts:
+    paths:
+      - out/smoke-hello.mp4
+      - out/smoke-thumb.png
+    expire_in: 1 week
+  only:
+    - merge_requests
+    - main
+
 # Build Remotion bundle
 build:bundle:
   <<: *node_setup
   stage: build
   script:
-    - npm run build
+    - npm run build -- --browser-executable "$REMOTION_BROWSER_EXECUTABLE"
   artifacts:
     paths:
       - out/
@@ -51,7 +69,7 @@ render:video:
   <<: *node_setup
   stage: render
   script:
-    - npx remotion render src/index.ts HelloWorld out/video.mp4
+    - npx remotion render src/index.ts HelloWorld out/video.mp4 --browser-executable "$REMOTION_BROWSER_EXECUTABLE"
   artifacts:
     paths:
       - out/video.mp4
@@ -68,7 +86,8 @@ render:scheduled:
   script:
     - |
       npx remotion render src/index.ts HelloWorld out/video-$(date +%Y%m%d).mp4 \
-        --props='{"titleText":"Daily Video","titleColor":"#FF0000"}'
+        --props='{"titleText":"Daily Video","titleColor":"#FF0000"}' \
+        --browser-executable "$REMOTION_BROWSER_EXECUTABLE"
   artifacts:
     paths:
       - out/*.mp4

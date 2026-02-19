@@ -19,28 +19,33 @@ on:
 jobs:
   render:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+
       - name: Render video
         run: |
           if [ -n "${{ github.event.inputs.props }}" ]; then
-            npx remotion render src/index.ts ${{ github.event.inputs.composition || 'HelloWorld' }} out/video.mp4 --props='${{ github.event.inputs.props }}'
+            npx remotion render src/index.ts ${{ github.event.inputs.composition || 'HelloWorld' }} out/video.mp4 --props='${{ github.event.inputs.props }}' --browser-executable "${CHROME_PATH}"
           else
-            npx remotion render src/index.ts ${{ github.event.inputs.composition || 'HelloWorld' }} out/video.mp4
+            npx remotion render src/index.ts ${{ github.event.inputs.composition || 'HelloWorld' }} out/video.mp4 --browser-executable "${CHROME_PATH}"
           fi
-      
+
       - name: Upload video artifact
         uses: actions/upload-artifact@v4
         with:
