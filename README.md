@@ -183,6 +183,11 @@ npx remotion render src/index.ts short-hist-roma-01 out/shorts/hist-roma-01.mp4
 
 # Renderizar los shorts de ejemplo del dataset
 npm run render:shorts
+
+# Render incremental (salta outputs existentes) + reintentos
+node scripts/render-batch.js --mode=videos --from=1 --to=50 --retries=2
+node scripts/render-batch.js --mode=thumbs --from=1 --to=50 --retries=2
+node scripts/render-shorts.js --retries=2
 ```
 
 ## 🧪 Testing
@@ -199,6 +204,17 @@ npx eslint src --ext ts,tsx
 
 # Solo type checking
 npx tsc --noEmit
+```
+
+
+
+### Browser executable en CI/headless
+
+Para evitar descargas dinámicas de Chromium en entornos restringidos, puedes apuntar Remotion a un binario ya instalado:
+
+```bash
+export REMOTION_BROWSER_EXECUTABLE=/usr/bin/chromium
+npx remotion render src/index.ts HelloWorld out/video.mp4 --browser-executable "$REMOTION_BROWSER_EXECUTABLE"
 ```
 
 ## 🔧 Configuración Avanzada
@@ -282,19 +298,19 @@ Composición registrada:
 Quedó preparado un flujo para renderizar **múltiples videos** y también sus miniaturas:
 
 ```bash
-# Ver todas las composiciones disponibles (incluye QuizVertical_001..050 y QuizThumb_001..050)
+# Ver todas las composiciones disponibles (incluye QuizVertical-001..050 y QuizThumb-001..050)
 npx remotion compositions src/index.ts
 
 # Render batch de videos verticales
 mkdir -p out/videos
 for id in $(seq -f "%03g" 1 50); do
-  npx remotion render src/index.ts "QuizVertical_${id}" "out/videos/quiz-${id}.mp4"
+  npx remotion render src/index.ts "QuizVertical-${id}" "out/videos/quiz-${id}.mp4"
 done
 
 # Render batch de miniaturas
 mkdir -p out/thumbnails
 for id in $(seq -f "%03g" 1 50); do
-  npx remotion still src/index.ts "QuizThumb_${id}" "out/thumbnails/quiz-${id}.png"
+  npx remotion still src/index.ts "QuizThumb-${id}" "out/thumbnails/quiz-${id}.png"
 done
 ```
 

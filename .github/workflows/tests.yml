@@ -27,3 +27,30 @@ jobs:
 
       - name: Run unit tests
         run: npm run test:unit
+
+  smoke-render:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+
+      - name: Smoke render core compositions
+        run: |
+          npx remotion render src/index.ts HelloWorld out/smoke-hello.mp4 --browser-executable "${CHROME_PATH}"
+          npx remotion still src/index.ts QuizThumb-001 out/smoke-thumb.png --browser-executable "${CHROME_PATH}"

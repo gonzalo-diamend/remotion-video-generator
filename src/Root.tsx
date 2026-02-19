@@ -6,9 +6,9 @@ import {QuizThumbnail} from './QuizThumbnail';
 import {QuizEurope, QuizQuestion} from './QuizEurope';
 import {QuizVertical} from './QuizVertical';
 import {QuizShortViral} from './components/QuizShortViral';
-import {ShortQuizItem} from './types/quiz';
 import {spanishQuizVideos} from './videos-es';
 import shortsHistoryData from '../data/shorts/history.json';
+import {validateShortsDataset} from './runtime-validation';
 
 const europeQuestions: QuizQuestion[] = [
   {country: 'España', options: ['Madrid', 'Barcelona', 'Sevilla', 'Valencia'], correctIndex: 0},
@@ -23,27 +23,7 @@ const europeQuestions: QuizQuestion[] = [
   {country: 'Grecia', options: ['Tesalónica', 'Heraclión', 'Atenas', 'Patras'], correctIndex: 2},
 ];
 
-const isShortQuizItem = (value: unknown): value is ShortQuizItem => {
-  if (!value || typeof value !== 'object') return false;
-
-  const item = value as Partial<ShortQuizItem>;
-
-  return (
-    typeof item.id === 'string' &&
-    typeof item.series === 'string' &&
-    typeof item.level === 'string' &&
-    typeof item.question === 'string' &&
-    Array.isArray(item.options) &&
-    item.options.length === 4 &&
-    item.options.every((option) => typeof option === 'string') &&
-    typeof item.correctIndex === 'number' &&
-    item.correctIndex >= 0 &&
-    item.correctIndex < 4 &&
-    (item.explanation === undefined || typeof item.explanation === 'string')
-  );
-};
-
-const shortsHistory = (shortsHistoryData as unknown[]).filter(isShortQuizItem);
+const shortsHistory = validateShortsDataset(shortsHistoryData);
 
 const INTRO_DURATION_SEC = 5;
 const QUESTION_DURATION_SEC = 10;
@@ -155,7 +135,7 @@ export const RemotionRoot: React.FC = () => {
         return (
           <React.Fragment key={payload.video.id}>
             <Composition
-              id={`QuizVertical_${item}`}
+              id={`QuizVertical-${item}`}
               component={QuizVertical as unknown as React.ComponentType<Record<string, unknown>>}
               fps={30}
               width={1080}
@@ -165,7 +145,7 @@ export const RemotionRoot: React.FC = () => {
             />
 
             <Composition
-              id={`QuizThumb_${item}`}
+              id={`QuizThumb-${item}`}
               component={QuizThumbnail as unknown as React.ComponentType<Record<string, unknown>>}
               fps={30}
               width={1280}

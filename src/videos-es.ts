@@ -1,6 +1,7 @@
 import {QuizVideoPayload} from './quiz-schema';
 import {buildHashtags, buildSeoDescription, buildTags} from './quiz-metadata';
 import {buildRenderCatalog} from './render-catalog';
+import {validateQuizVideoPayloads} from './runtime-validation';
 
 type BankQuestion = {
   question: string;
@@ -255,6 +256,6 @@ export const generateSpanishQuizVideos = (): QuizVideoPayload[] => {
   });
 };
 
-export const spanishQuizVideos = generateSpanishQuizVideos();
+export const spanishQuizVideos = validateQuizVideoPayloads(generateSpanishQuizVideos());
 
 export const quizRenderCatalog = buildRenderCatalog(spanishQuizVideos);
