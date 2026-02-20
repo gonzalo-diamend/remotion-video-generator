@@ -249,6 +249,81 @@ npx remotion render src/index.ts HelloWorld out/video.mp4 \
   --props='{"titleText":"Q1 2026 Results","titleColor":"#00FF00"}'
 ```
 
+## 📤 Publicación en YouTube (subida + programación)
+
+El repo incluye un flujo automatizado de publicación con metadata (`title`, `description`, `tags`, miniatura y programación).
+
+### 1) Render de assets
+
+```bash
+npm run render:batch
+npm run render:thumbs
+```
+
+### 2) Configurar credenciales OAuth2
+
+1. Crea una app OAuth en Google Cloud con YouTube Data API v3 habilitada.
+2. Obtén `client_id`, `client_secret`, `redirect_uri` y `refresh_token`.
+3. Copia `.env.youtube.example` y exporta variables al shell:
+
+```bash
+export YT_CLIENT_ID="..."
+export YT_CLIENT_SECRET="..."
+export YT_REDIRECT_URI="..."
+export YT_REFRESH_TOKEN="..."
+```
+
+Opcionales:
+
+```bash
+export YT_DEFAULT_PRIVACY_STATUS="private"   # private|unlisted|public
+export YT_DEFAULT_CATEGORY_ID="27"           # Education
+export YT_DEFAULT_PLAYLIST_ID=""
+export YT_SCHEDULE_START="2026-02-20T15:00:00Z"
+export YT_SCHEDULE_INTERVAL_HOURS="24"
+```
+
+### 3) Generar manifiesto de publicación
+
+```bash
+# Usa metadata de src/videos-es.ts y src/render-catalog.ts
+npm run publish:manifest
+
+# Ejemplo: programar desde fecha/hora inicial, cada 12 horas
+node scripts/build-publish-manifest.js \
+  --from=1 --to=50 \
+  --schedule-start=2026-02-20T15:00:00Z \
+  --interval-hours=12
+```
+
+Salida: `out/publish/manifest.json`
+
+### 4) Validar y subir/programar
+
+```bash
+# Vista previa sin subir nada
+npm run publish:youtube:dry
+
+# Subida real
+npm run publish:youtube
+```
+
+Opciones útiles:
+
+```bash
+# Reintentos y rango parcial
+node scripts/youtube-upload.js --from-index=1 --to-index=10 --retries=4
+
+# Forzar re-subida de ítems ya marcados como subidos en el estado local
+node scripts/youtube-upload.js --force
+```
+
+### 5) Estado e idempotencia
+
+- Estado local: `out/publish/upload-state.json`
+- Si un `localId` ya fue subido, se salta automáticamente (salvo `--force`).
+- Si `publishAt` está definido, se sube como `private` y YouTube lo publica en la fecha/hora indicada.
+
 ## 📚 Recursos
 
 - [Documentación Oficial de Remotion](https://www.remotion.dev/docs)

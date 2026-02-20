@@ -10,7 +10,10 @@
     "render:batch": "node scripts/render-batch.js --mode=videos",
     "render:thumbs": "node scripts/render-batch.js --mode=thumbs",
     "test:unit": "rm -rf .test-dist && tsc -p tsconfig.tests.json && node --test .test-dist/tests/*.test.js",
-    "render:shorts": "node scripts/render-shorts.js"
+    "render:shorts": "node scripts/render-shorts.js",
+    "publish:manifest": "node scripts/build-publish-manifest.js",
+    "publish:youtube:dry": "node scripts/youtube-upload.js --dry-run",
+    "publish:youtube": "node scripts/youtube-upload.js"
   },
   "repository": {
     "type": "git",
@@ -18,17 +21,18 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@remotion/cli": "^4.0.0",
     "@remotion/bundler": "^4.0.0",
+    "@remotion/cli": "^4.0.0",
     "@remotion/renderer": "^4.0.0",
+    "googleapis": "^171.4.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "remotion": "^4.0.0"
   },
   "devDependencies": {
+    "@types/node": "^20.0.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
-    "@types/node": "^20.0.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.0.0",
