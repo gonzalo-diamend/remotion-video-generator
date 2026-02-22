@@ -188,6 +188,10 @@ npm run render:shorts
 node scripts/render-batch.js --mode=videos --from=1 --to=50 --retries=2
 node scripts/render-batch.js --mode=thumbs --from=1 --to=50 --retries=2
 node scripts/render-shorts.js --retries=2
+
+# Reportes de ejecución (JSON latest + histórico NDJSON)
+node scripts/render-batch.js --mode=videos --report-path=out/reports/batch-videos.json
+node scripts/render-shorts.js --report-path=out/reports/shorts.json
 ```
 
 ## 🧪 Testing
@@ -207,6 +211,20 @@ npx tsc --noEmit
 ```
 
 
+
+### Métricas y reportes de lote
+
+Los scripts de lote guardan métricas automáticamente en `out/reports/`:
+
+- `scripts/render-batch.js`
+  - latest por modo: `out/reports/render-batch-videos-latest.json` o `render-batch-thumbs-latest.json`
+  - histórico: `out/reports/render-batch-history.ndjson`
+- `scripts/render-shorts.js`
+  - latest: `out/reports/render-shorts-latest.json`
+  - histórico: `out/reports/render-shorts-history.ndjson`
+
+Cada ejecución incluye timestamps, duración total, resumen (`success/failed/skipped`) y detalle por composición exitosa.
+Puedes personalizar rutas con `--report-path=...` y `--history-path=...`.
 
 ### Browser executable en CI/headless
 
