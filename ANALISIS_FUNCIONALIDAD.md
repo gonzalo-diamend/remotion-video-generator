@@ -56,6 +56,17 @@ Después de revisar código, scripts y pipeline, el proyecto quedó **funcional 
 
 ## Pendientes recomendados (siguiente iteración)
 
-- Guardar métricas históricas de lote (tiempos por composición) para observabilidad fina.
 - Añadir job nocturno de render completo (50 videos + 50 thumbs) con artefactos y reporte.
 - Incorporar validación semántica adicional (por ejemplo duración total esperada por video).
+
+## Progreso inmediato de la próxima iteración
+
+✅ Métricas históricas de lote implementadas:
+
+- `scripts/render-batch.js` ahora genera:
+  - reporte latest JSON por modo (`videos`/`thumbs`),
+  - histórico en NDJSON para tendencia corrida.
+- `scripts/render-shorts.js` ahora genera:
+  - reporte latest JSON,
+  - histórico en NDJSON.
+- Ambos reportes incluyen timestamps (`startedAt`, `finishedAt`), `totalDurationMs`, resumen y detalle por composición.
