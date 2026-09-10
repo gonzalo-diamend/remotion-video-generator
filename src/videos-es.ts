@@ -211,12 +211,12 @@ export const generateSpanishQuizVideos = (): QuizVideoPayload[] => {
       const difficulty = idx < 4 ? 'easy' : idx < 8 ? 'medium' : 'hard';
       return {
         id: idx + 1,
-        question: `${item.question} (V${i + 1})`,
+        question: item.question,
         options: item.options,
         correct_index: item.correctIndex,
         explanation: item.explanation,
         difficulty,
-        duration_frames: 1350,
+        duration_frames: 360,
       } as const;
     });
 
@@ -229,7 +229,7 @@ export const generateSpanishQuizVideos = (): QuizVideoPayload[] => {
         description: buildSeoDescription(topic, title),
         tags: buildTags(topic),
         hashtags: buildHashtags(topic),
-        duration_seconds: 550,
+        duration_seconds: 154,
         difficulty: 'mixed',
         topic,
         language: 'es',

@@ -1,0 +1,110 @@
+name: Produce Quiz
+
+on:
+  schedule:
+    # Four UTC checks preserve 13:00 and 21:00 in Europe/Madrid across DST.
+    - cron: '0 11 * * *'
+    - cron: '0 12 * * *'
+    - cron: '0 19 * * *'
+    - cron: '0 20 * * *'
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: 'Tema en español (vacío = quiz de muestra)'
+        required: false
+        type: string
+      tts:
+        description: 'Proveedor de voz'
+        required: true
+        default: 'openai'
+        type: choice
+        options: ['openai', 'auto', 'mpt', 'none']
+      upload:
+        description: 'Subir a YouTube'
+        required: true
+        default: false
+        type: boolean
+      privacy:
+        description: 'Privacidad para ejecución manual'
+        required: true
+        default: 'private'
+        type: choice
+        options: ['private', 'unlisted', 'public']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: youtube-quiz-production
+  cancel-in-progress: false
+
+jobs:
+  produce:
+    if: github.event_name != 'schedule' || vars.YT_AUTOMATION_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve topic and publication plan
+        id: plan
+        env:
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          MANUAL_TOPIC: ${{ inputs.topic }}
+          MANUAL_TTS: ${{ inputs.tts }}
+          MANUAL_UPLOAD: ${{ inputs.upload }}
+          MANUAL_PRIVACY: ${{ inputs.privacy }}
+        run: node scripts/select-topic.js
+
+      - uses: actions/setup-node@v4
+        if: steps.plan.outputs.should_run == 'true'
+        with:
+          node-version: '20'
+
+      - uses: astral-sh/setup-uv@v6
+        if: steps.plan.outputs.should_run == 'true' && (steps.plan.outputs.tts == 'mpt' || steps.plan.outputs.tts == 'auto')
+
+      - name: Install Node dependencies
+        if: steps.plan.outputs.should_run == 'true'
+        run: npm install --no-audit --no-fund
+
+      - name: Install MoneyPrinterTurbo fallback
+        if: steps.plan.outputs.should_run == 'true' && (steps.plan.outputs.tts == 'mpt' || steps.plan.outputs.tts == 'auto')
+        run: npm run setup:mpt
+
+      - name: Produce and publish quiz
+        if: steps.plan.outputs.should_run == 'true'
+        env:
+          QUIZ_TOPIC: ${{ steps.plan.outputs.topic }}
+          QUIZ_ID: ${{ steps.plan.outputs.video_id }}
+          QUIZ_TTS: ${{ steps.plan.outputs.tts }}
+          QUIZ_UPLOAD: ${{ steps.plan.outputs.upload }}
+          QUIZ_PRIVACY: ${{ steps.plan.outputs.privacy }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5-mini' }}
+          OPENAI_TTS_MODEL: ${{ vars.OPENAI_TTS_MODEL || 'gpt-4o-mini-tts' }}
+          OPENAI_TTS_VOICE: ${{ vars.OPENAI_TTS_VOICE || 'coral' }}
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REDIRECT_URI: ${{ secrets.YT_REDIRECT_URI }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+          YT_DEFAULT_CATEGORY_ID: ${{ vars.YT_DEFAULT_CATEGORY_ID || '27' }}
+          YT_DEFAULT_PLAYLIST_ID: ${{ vars.YT_DEFAULT_PLAYLIST_ID }}
+        run: |
+          args=("--tts=$QUIZ_TTS" "--privacy=$QUIZ_PRIVACY")
+          if [ -n "$QUIZ_TOPIC" ]; then args+=("--topic=$QUIZ_TOPIC"); fi
+          if [ -n "$QUIZ_ID" ]; then args+=("--id=$QUIZ_ID"); fi
+          if [ "$QUIZ_UPLOAD" = "true" ]; then args+=("--upload"); fi
+          node scripts/create-video.js "${args[@]}"
+
+      - name: Upload generated assets
+        if: steps.plan.outputs.should_run == 'true' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quiz-${{ github.run_number }}
+          path: |
+            out/videos/*.mp4
+            out/thumbnails/*.png
+            out/jobs/**/manifest.json
+            out/jobs/**/quiz.json
+          retention-days: 30

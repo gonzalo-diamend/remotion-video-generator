@@ -66,6 +66,12 @@ export const validateQuizVideoPayloads = (payloads: QuizVideoPayload[]): QuizVid
       assertCondition(question.options.length === 4, `payload ${payload.video.id} pregunta ${qIndex + 1} debe tener 4 opciones`);
       assertCondition(question.correct_index >= 0 && question.correct_index < 4, `payload ${payload.video.id} pregunta ${qIndex + 1} correct_index inválido`);
       assertCondition(question.duration_frames > 0, `payload ${payload.video.id} pregunta ${qIndex + 1} duration_frames inválido`);
+      if (question.answer_reveal_frame !== undefined) {
+        assertCondition(
+          question.answer_reveal_frame > 0 && question.answer_reveal_frame < question.duration_frames,
+          `payload ${payload.video.id} pregunta ${qIndex + 1} answer_reveal_frame inválido`,
+        );
+      }
     });
   });
 

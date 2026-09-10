@@ -28,5 +28,5 @@ test('buildHashtags incluye hashtag del tópico sin espacios', () => {
 test('buildThumbnailTitle usa topic en mayúsculas', () => {
   const payload = spanishQuizVideos[0];
   const title = buildThumbnailTitle(payload);
-  assert.equal(title, `${payload.video.topic.toUpperCase()} QUIZ`);
+  assert.equal(title, `QUIZ DE ${payload.video.topic.toUpperCase()}`);
 });

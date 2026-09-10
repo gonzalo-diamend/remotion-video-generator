@@ -26,6 +26,7 @@ export interface QuizQuestionItem {
   explanation: string;
   difficulty: Exclude<Difficulty, 'mixed'>;
   duration_frames: number;
+  answer_reveal_frame?: number;
 }
 
 export interface QuizRenderConfig {
