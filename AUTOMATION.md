@@ -1,17 +1,16 @@
 # Automatización de The Quiz Channel
 
-Este flujo combina generación estructurada, la voz gratuita usada por MoneyPrinterTurbo, el renderer visual de Remotion y la subida directa a YouTube.
+Este flujo combina generación estructurada, OpenAI TTS con fallback de MoneyPrinterTurbo, el renderer visual de Remotion y la subida directa a YouTube.
 
 ## Primera ejecución
 
-Requisitos: Node.js 20+, Python 3.11+, `uv`, Git y FFmpeg.
+Requisitos para el flujo principal: Node.js 20+, Git y FFmpeg. Python 3.11+ y `uv` solo hacen falta si se usa el fallback de MoneyPrinterTurbo.
 
 ```bash
-npm ci
-npm run setup:mpt
+npm install
 ```
 
-Genera un primer video usando el quiz incluido, sin consumir una API de IA:
+Con `OPENAI_API_KEY` configurada, genera un primer video usando el quiz incluido (solo consume la API de voz):
 
 ```bash
 npm run create:video -- --index=1
@@ -23,11 +22,20 @@ El resultado queda en:
 - `out/thumbnails/quiz-001.png`
 - `out/jobs/quiz-001/manifest.json`
 
-Para comprobar solo el renderer, sin voz:
+OpenAI TTS usa por defecto `gpt-4o-mini-tts`, la voz `coral` e instrucciones de locución en español de España. Para comprobar solo el renderer, sin voz:
 
 ```bash
 npm run create:video -- --index=1 --tts=none
 ```
+
+Para usar Edge TTS explícitamente:
+
+```bash
+npm run setup:mpt
+npm run create:video -- --index=1 --tts=mpt
+```
+
+El modo `--tts=auto` intenta OpenAI y utiliza MoneyPrinterTurbo si la API no está disponible. Las descripciones incluyen automáticamente el aviso de que la narración fue generada con IA.
 
 ## Generar un quiz nuevo con IA
 
@@ -50,12 +58,24 @@ npm run create:video -- --topic="Historia de España" --upload --privacy=private
 
 El estado de subida se conserva en `out/publish/upload-state.json`, evitando repetir videos accidentalmente.
 
-## GitHub Actions
+## Dos publicaciones automáticas por día
 
-El workflow **Produce Quiz** permite generar un tema manualmente, descargar video/miniatura como artefactos y, opcionalmente, subirlo en privado. Añade los secretos de OpenAI y YouTube en `Settings → Secrets and variables → Actions` antes de activar la subida.
+El workflow **Produce Quiz** se ejecuta todos los días a las **13:00 y 21:00 de Europe/Madrid**, adaptándose al horario de verano. Cada franja selecciona un tema evergreen distinto, crea un ID determinista, genera voz y miniatura, renderiza y publica en YouTube. GitHub puede iniciar un cron unos minutos después de la hora exacta.
+
+Añade estos secretos en `Settings → Secrets and variables → Actions`:
+
+- `OPENAI_API_KEY`
+- `YT_CLIENT_ID`
+- `YT_CLIENT_SECRET`
+- `YT_REDIRECT_URI`
+- `YT_REFRESH_TOKEN`
+
+Variables opcionales: `OPENAI_MODEL`, `OPENAI_TTS_MODEL`, `OPENAI_TTS_VOICE`, `YT_DEFAULT_CATEGORY_ID` y `YT_DEFAULT_PLAYLIST_ID`.
+
+Las ejecuciones programadas publican como `public`. Las ejecuciones manuales permanecen `private` por defecto. Antes de subir, el pipeline busca el marcador único `[quiz-id:...]` entre los videos del canal para impedir duplicados aunque una ejecución de GitHub Actions sea reintentada.
 
 ## Decisión sobre MoneyPrinterTurbo
 
-MoneyPrinterTurbo no reemplaza el diseño de quiz. Se instala fuera del repositorio, bajo `.tools/`, y proporciona su entorno de voz Edge TTS. Remotion conserva el control del temporizador, las cuatro opciones, el revelado de la respuesta y la miniatura. La publicación sigue usando la API oficial de YouTube en lugar de un servicio intermediario.
+MoneyPrinterTurbo no reemplaza el diseño de quiz. Se instala fuera del repositorio, bajo `.tools/`, y queda disponible como proveedor alternativo de Edge TTS. Remotion conserva el control del temporizador, las cuatro opciones, el revelado de la respuesta y la miniatura. La publicación sigue usando la API oficial de YouTube en lugar de un servicio intermediario.
 
 MoneyPrinterTurbo está licenciado bajo MIT. Su código no se redistribuye en este repositorio; el setup clona el proyecto original y fija por defecto la revisión auditada indicada en `MPT_REF`. Actualiza esa revisión de forma deliberada cuando quieras incorporar cambios posteriores del proyecto.

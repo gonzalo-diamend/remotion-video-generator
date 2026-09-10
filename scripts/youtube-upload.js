@@ -205,6 +205,24 @@ const addToPlaylist = async (youtube, youtubeVideoId, playlistId, retries, local
   return true;
 };
 
+const findExistingVideo = async (youtube, localId, retries) => {
+  const marker = `[quiz-id:${localId}]`;
+  const searchResponse = await withRetries(
+    () => youtube.search.list({part: ['id'], forMine: true, q: marker, type: ['video'], maxResults: 10}),
+    retries,
+    `search:${localId}`,
+  );
+  const ids = (searchResponse.data.items || []).map((item) => item.id?.videoId).filter(Boolean);
+  if (ids.length === 0) return null;
+
+  const videosResponse = await withRetries(
+    () => youtube.videos.list({part: ['snippet'], id: ids}),
+    retries,
+    `videos.list:${localId}`,
+  );
+  return (videosResponse.data.items || []).find((video) => video.snippet?.description?.includes(marker)) || null;
+};
+
 const main = async () => {
   const config = parseArgs();
 
@@ -283,6 +301,23 @@ const main = async () => {
     };
 
     try {
+      if (!config.force) {
+        const existingVideo = await findExistingVideo(youtube, item.localId, config.retries);
+        if (existingVideo?.id) {
+          skipped += 1;
+          state.uploads[item.localId] = {
+            localId: item.localId,
+            youtubeVideoId: existingVideo.id,
+            title: existingVideo.snippet?.title || item.title,
+            status: 'already-on-youtube',
+            updatedAt: new Date().toISOString(),
+          };
+          saveJson(statePath, state);
+          console.log(`[upload] skip ${item.localId}: ya existe en YouTube como ${existingVideo.id}`);
+          continue;
+        }
+      }
+
       console.log(`[upload] start ${item.localId} (${idx + 1}/${items.length})`);
       const videoData = await uploadVideo(youtube, uploadItem, config.retries);
       const youtubeVideoId = videoData.id;

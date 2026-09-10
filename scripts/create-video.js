@@ -24,12 +24,13 @@ const writeJson = (filePath, value) => {
 try {
   const topic = getArg('topic');
   const sourceInput = getArg('input');
+  const requestedId = getArg('id');
   const builtinIndex = Number(getArg('index', '1'));
-  const tts = getArg('tts', 'mpt');
+  const tts = getArg('tts', 'openai');
   const privacyStatus = getArg('privacy', 'private');
   const force = hasFlag('force');
 
-  if (!['mpt', 'none'].includes(tts)) throw new Error('--tts debe ser mpt o none');
+  if (!['openai', 'mpt', 'auto', 'none'].includes(tts)) throw new Error('--tts debe ser openai, mpt, auto o none');
   if (!['private', 'unlisted', 'public'].includes(privacyStatus)) throw new Error('--privacy inválido');
 
   let payload;
@@ -40,7 +41,9 @@ try {
     payload = JSON.parse(fs.readFileSync(seedPath, 'utf8'));
   } else if (topic) {
     const temporaryOutput = path.join(projectRoot, 'out', 'generated', `quiz-${Date.now()}.json`);
-    run('node', ['scripts/generate-quiz.js', `--topic=${topic}`, `--output=${temporaryOutput}`]);
+    const generationArgs = ['scripts/generate-quiz.js', `--topic=${topic}`, `--output=${temporaryOutput}`];
+    if (requestedId) generationArgs.push(`--id=${requestedId}`);
+    run('node', generationArgs);
     seedPath = temporaryOutput;
     payload = JSON.parse(fs.readFileSync(seedPath, 'utf8'));
   } else {
@@ -62,8 +65,8 @@ try {
 
   let props = {payload, audioCues: []};
   const propsPath = path.join(jobDir, 'props.json');
-  if (tts === 'mpt') {
-    const narrationArgs = ['scripts/generate-narration.js', `--input=${quizPath}`, `--props-output=${propsPath}`];
+  if (tts !== 'none') {
+    const narrationArgs = ['scripts/generate-narration.js', `--provider=${tts}`, `--input=${quizPath}`, `--props-output=${propsPath}`];
     if (force) narrationArgs.push('--force');
     run('node', narrationArgs);
     props = JSON.parse(fs.readFileSync(propsPath, 'utf8'));
@@ -93,6 +96,7 @@ try {
 
   const manifestPath = path.join(jobDir, 'manifest.json');
   const hashtags = payload.video.hashtags.join(' ');
+  const disclosure = 'Narración generada con inteligencia artificial.';
   writeJson(manifestPath, {
     generatedAt: new Date().toISOString(),
     source: quizPath,
@@ -100,9 +104,9 @@ try {
     items: [{
       localId: payload.video.id,
       title: payload.video.title,
-      description: `${payload.video.description}\n\n${hashtags}`,
+      description: `${payload.video.description}\n\n${disclosure}\n[quiz-id:${payload.video.id}]\n\n${hashtags}`,
       tags: payload.video.tags,
-      categoryId: '27',
+      categoryId: process.env.YT_DEFAULT_CATEGORY_ID || '27',
       privacyStatus,
       publishAt: null,
       playlistId: process.env.YT_DEFAULT_PLAYLIST_ID || null,

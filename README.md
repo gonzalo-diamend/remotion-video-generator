@@ -33,11 +33,10 @@ npm install
 
 ### Fábrica completa para The Quiz Channel
 
-El comando principal genera o carga un quiz de 12 preguntas, crea la narración usando el entorno de MoneyPrinterTurbo, ajusta los tiempos, renderiza el video y la miniatura y prepara el manifiesto de YouTube:
+El comando principal genera o carga un quiz de 12 preguntas, crea la narración con OpenAI TTS (o MoneyPrinterTurbo como fallback), ajusta los tiempos, renderiza el video y la miniatura gráfica y prepara el manifiesto de YouTube:
 
 ```bash
-npm ci
-npm run setup:mpt
+npm install
 npm run create:video -- --index=1
 ```
 
@@ -47,7 +46,7 @@ Con `OPENAI_API_KEY` configurada también puede crear contenido nuevo:
 npm run create:video -- --topic="Historia de España"
 ```
 
-Consulta [AUTOMATION.md](AUTOMATION.md) para la configuración de voz, GitHub Actions y la subida privada a YouTube.
+Consulta [AUTOMATION.md](AUTOMATION.md) para la configuración de voz, GitHub Actions y las dos publicaciones automáticas diarias.
 
 ### Modo Desarrollo (Remotion Studio)
 

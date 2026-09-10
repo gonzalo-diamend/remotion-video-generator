@@ -53,6 +53,12 @@ const assertQuizPayload = (payload) => {
   if (!nonEmpty(payload.video.title) || !nonEmpty(payload.video.description) || !nonEmpty(payload.video.topic)) {
     throw new Error('El payload necesita video.title, video.description y video.topic');
   }
+  if (!Array.isArray(payload.video.hashtags) || !payload.video.hashtags.every(nonEmpty)) {
+    throw new Error('video.hashtags debe ser un array de textos');
+  }
+  if (!Array.isArray(payload.video.tags) || !payload.video.tags.every(nonEmpty)) {
+    throw new Error('video.tags debe ser un array de textos');
+  }
   if (!payload.intro || !nonEmpty(payload.intro.text) || !Number.isInteger(payload.intro.duration_frames) || payload.intro.duration_frames < 1) {
     throw new Error('intro inválida');
   }

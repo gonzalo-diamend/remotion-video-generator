@@ -4,6 +4,7 @@ const path = require('path');
 const {spawnSync} = require('child_process');
 const {loadTypeScriptModule} = require('./lib/load-typescript');
 const {assertQuizPayload} = require('./lib/quiz-payload');
+const {generateOpenAiSpeech} = require('./lib/openai-tts');
 
 const projectRoot = path.resolve(__dirname, '..');
 const getArg = (name, fallback = '') => {
@@ -36,12 +37,18 @@ const speechItems = (payload) => {
   return items;
 };
 
-try {
+const main = async () => {
   const input = path.resolve(getArg('input'));
   if (!getArg('input') || !fs.existsSync(input)) throw new Error('Falta --input=<quiz.json> válido');
   const payload = JSON.parse(fs.readFileSync(input, 'utf8'));
   assertQuizPayload(payload);
-  const voice = getArg('voice', process.env.MPT_VOICE || 'es-ES-AlvaroNeural');
+  const provider = getArg('provider', 'openai');
+  if (!['openai', 'mpt', 'auto'].includes(provider)) throw new Error('--provider debe ser openai, mpt o auto');
+  const openAiVoice = getArg('voice', process.env.OPENAI_TTS_VOICE || 'coral');
+  const openAiModel = getArg('model', process.env.OPENAI_TTS_MODEL || 'gpt-4o-mini-tts');
+  const openAiInstructions = process.env.OPENAI_TTS_INSTRUCTIONS ||
+    'Habla en español de España, con energía de presentador de concurso, ritmo ágil, dicción clara y pausas naturales. No exageres ni grites.';
+  const mptVoice = getArg('mpt-voice', process.env.MPT_VOICE || 'es-ES-AlvaroNeural');
   const rate = getArg('rate', process.env.MPT_VOICE_RATE || '+15%');
   const mptDir = path.resolve(process.env.MPT_DIR || path.join(projectRoot, '.tools', 'MoneyPrinterTurbo'));
   const uv = process.env.UV_EXECUTABLE || 'uv';
@@ -53,7 +60,7 @@ try {
   const mediaBasePath = path.relative(path.join(projectRoot, 'public'), publicDir).split(path.sep).join('/');
   const force = hasFlag('force');
 
-  if (!fs.existsSync(path.join(mptDir, 'pyproject.toml'))) {
+  if (provider === 'mpt' && !fs.existsSync(path.join(mptDir, 'pyproject.toml'))) {
     throw new Error('MoneyPrinterTurbo no está instalado. Ejecuta npm run setup:mpt');
   }
   fs.mkdirSync(publicDir, {recursive: true});
@@ -62,8 +69,31 @@ try {
   for (const item of speechItems(payload)) {
     const output = path.join(publicDir, item.fileName);
     if (!fs.existsSync(output) || force) {
-      console.log(`[narration] ${item.id}`);
-      run(uv, ['run', '--project', mptDir, 'python', '-m', 'edge_tts', '--voice', voice, '--rate', rate, '--text', item.text, '--write-media', output]);
+      console.log(`[narration] ${item.id} (${provider})`);
+      let generated = false;
+      if (provider === 'openai' || (provider === 'auto' && process.env.OPENAI_API_KEY)) {
+        try {
+          await generateOpenAiSpeech({
+            text: item.text,
+            output,
+            voice: openAiVoice,
+            model: openAiModel,
+            instructions: openAiInstructions,
+            apiKey: process.env.OPENAI_API_KEY,
+            baseUrl: process.env.OPENAI_BASE_URL,
+          });
+          generated = true;
+        } catch (error) {
+          if (provider === 'openai') throw error;
+          console.warn(`[narration] OpenAI TTS no disponible: ${error.message}. Usando Edge TTS.`);
+        }
+      }
+      if (!generated) {
+        if (!fs.existsSync(path.join(mptDir, 'pyproject.toml'))) {
+          throw new Error('El fallback de Edge TTS requiere npm run setup:mpt');
+        }
+        run(uv, ['run', '--project', mptDir, 'python', '-m', 'edge_tts', '--voice', mptVoice, '--rate', rate, '--text', item.text, '--write-media', output]);
+      }
     }
     measured.set(item.id, durationSeconds(output));
   }
@@ -87,7 +117,9 @@ try {
   fs.mkdirSync(path.dirname(outputProps), {recursive: true});
   fs.writeFileSync(outputProps, `${JSON.stringify(props, null, 2)}\n`, 'utf8');
   console.log(outputProps);
-} catch (error) {
+};
+
+main().catch((error) => {
   console.error(`[narration] ${error.message}`);
   process.exit(1);
-}
+});

@@ -33,3 +33,9 @@ test('rechaza un id que podría escapar del directorio de salida', () => {
   payload.video.id = '../fuera';
   assert.throws(() => assertQuizPayload(payload), /video.id inválido/);
 });
+
+test('rechaza hashtags ausentes antes de renderizar', () => {
+  const payload = buildQuizPayload({topic: 'Historia', content: makeContent()});
+  delete payload.video.hashtags;
+  assert.throws(() => assertQuizPayload(payload), /video.hashtags/);
+});
