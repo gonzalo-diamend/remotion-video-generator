@@ -72,6 +72,8 @@ Añade estos secretos en `Settings → Secrets and variables → Actions`:
 
 Variables opcionales: `OPENAI_MODEL`, `OPENAI_TTS_MODEL`, `OPENAI_TTS_VOICE`, `YT_DEFAULT_CATEGORY_ID` y `YT_DEFAULT_PLAYLIST_ID`.
 
+Cuando los cinco secretos estén cargados y hayas ejecutado una prueba manual privada, crea la variable `YT_AUTOMATION_ENABLED=true`. Ese interruptor activa los dos cron y evita publicaciones o fallos accidentales antes de completar la configuración.
+
 Las ejecuciones programadas publican como `public`. Las ejecuciones manuales permanecen `private` por defecto. Antes de subir, el pipeline busca el marcador único `[quiz-id:...]` entre los videos del canal para impedir duplicados aunque una ejecución de GitHub Actions sea reintentada.
 
 ## Decisión sobre MoneyPrinterTurbo
