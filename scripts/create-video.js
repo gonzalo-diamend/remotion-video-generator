@@ -26,7 +26,7 @@ try {
   const sourceInput = getArg('input');
   const requestedId = getArg('id');
   const builtinIndex = Number(getArg('index', '1'));
-  const tts = getArg('tts', 'openai');
+  const tts = getArg('tts', 'mpt');
   const privacyStatus = getArg('privacy', 'private');
   const force = hasFlag('force');
 

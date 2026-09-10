@@ -1,19 +1,26 @@
-# Automatización de The Quiz Channel
+# Automatización gratuita de The Quiz Channel
 
-Este flujo combina generación estructurada, OpenAI TTS con fallback de MoneyPrinterTurbo, el renderer visual de Remotion y la subida directa a YouTube.
+El flujo programado no consume APIs de pago. Usa un catálogo local de 180 quizzes, Edge TTS mediante MoneyPrinterTurbo, Remotion para video y miniatura, y la API oficial de YouTube para publicar.
 
-## Primera ejecución
+## Qué incluye el stock
 
-Requisitos para el flujo principal: Node.js 20+, Git y FFmpeg. Python 3.11+ y `uv` solo hacen falta si se usa el fallback de MoneyPrinterTurbo.
+- 180 videos renderizables (`quiz-001` a `quiz-180`): 90 días a dos publicaciones diarias.
+- 12 preguntas por video: 4 fáciles, 4 medias y 4 difíciles.
+- Combinaciones, IDs y títulos únicos, generados de manera determinista.
+- Tres preguntas de la categoría principal y una pregunta complementaria por nivel.
+- Opciones reordenadas sin modificar la respuesta correcta.
+- Validaciones automatizadas contra conjuntos duplicados.
+
+El banco vive en `src/videos-es.ts`. Para ampliar el stock, agrega preguntas verificadas al banco y aumenta `STOCK_VIDEO_COUNT`; no hace falta una API de IA.
+
+## Primera ejecución local
+
+Requisitos: Node.js 20+, Git, FFmpeg, Python 3.11+ y `uv`.
 
 ```bash
 npm install
-```
-
-Con `OPENAI_API_KEY` configurada, genera un primer video usando el quiz incluido (solo consume la API de voz):
-
-```bash
-npm run create:video -- --index=1
+npm run setup:mpt
+npm run create:video -- --index=1 --tts=mpt
 ```
 
 El resultado queda en:
@@ -22,62 +29,69 @@ El resultado queda en:
 - `out/thumbnails/quiz-001.png`
 - `out/jobs/quiz-001/manifest.json`
 
-OpenAI TTS usa por defecto `gpt-4o-mini-tts`, la voz `coral` e instrucciones de locución en español de España. Para comprobar solo el renderer, sin voz:
+Para comprobar únicamente el render, sin narración:
 
 ```bash
 npm run create:video -- --index=1 --tts=none
 ```
 
-Para usar Edge TTS explícitamente:
+## Voz gratuita
 
-```bash
-npm run setup:mpt
-npm run create:video -- --index=1 --tts=mpt
+MoneyPrinterTurbo ejecuta Edge TTS sin API key. Los valores predeterminados son:
+
+```text
+MPT_VOICE=es-ES-AlvaroNeural
+MPT_VOICE_RATE=+15%
 ```
 
-El modo `--tts=auto` intenta OpenAI y utiliza MoneyPrinterTurbo si la API no está disponible. Las descripciones incluyen automáticamente el aviso de que la narración fue generada con IA.
+Pueden configurarse como variables del repositorio para probar otras voces o velocidades sin modificar código.
 
-## Generar un quiz nuevo con IA
+## Credenciales para YouTube
 
-Copia `.env.youtube.example` como `.env` y carga las variables en tu terminal. La suscripción de ChatGPT no sustituye una clave de API.
+Solo son necesarios estos cuatro secretos en `Settings → Secrets and variables → Actions`:
 
-```bash
-export OPENAI_API_KEY="..."
-npm run create:video -- --topic="Historia de España"
-```
-
-La API devuelve exactamente 12 preguntas mediante Structured Outputs. El pipeline aplica controles de preguntas repetidas, cuatro opciones únicas, respuesta válida y explicaciones obligatorias antes de renderizar.
-
-## Subir a YouTube
-
-Configura `YT_CLIENT_ID`, `YT_CLIENT_SECRET`, `YT_REDIRECT_URI` y `YT_REFRESH_TOKEN`. La primera subida debe mantenerse privada:
-
-```bash
-npm run create:video -- --topic="Historia de España" --upload --privacy=private
-```
-
-El estado de subida se conserva en `out/publish/upload-state.json`, evitando repetir videos accidentalmente.
-
-## Dos publicaciones automáticas por día
-
-El workflow **Produce Quiz** se ejecuta todos los días a las **13:00 y 21:00 de Europe/Madrid**, adaptándose al horario de verano. Cada franja selecciona un tema evergreen distinto, crea un ID determinista, genera voz y miniatura, renderiza y publica en YouTube. GitHub puede iniciar un cron unos minutos después de la hora exacta.
-
-Añade estos secretos en `Settings → Secrets and variables → Actions`:
-
-- `OPENAI_API_KEY`
 - `YT_CLIENT_ID`
 - `YT_CLIENT_SECRET`
 - `YT_REDIRECT_URI`
 - `YT_REFRESH_TOKEN`
 
-Variables opcionales: `OPENAI_MODEL`, `OPENAI_TTS_MODEL`, `OPENAI_TTS_VOICE`, `YT_DEFAULT_CATEGORY_ID` y `YT_DEFAULT_PLAYLIST_ID`.
+No se necesita `OPENAI_API_KEY` para generar, narrar ni publicar el stock.
 
-Cuando los cinco secretos estén cargados y hayas ejecutado una prueba manual privada, crea la variable `YT_AUTOMATION_ENABLED=true`. Ese interruptor activa los dos cron y evita publicaciones o fallos accidentales antes de completar la configuración.
+Variables opcionales:
 
-Las ejecuciones programadas publican como `public`. Las ejecuciones manuales permanecen `private` por defecto. Antes de subir, el pipeline busca el marcador único `[quiz-id:...]` entre los videos del canal para impedir duplicados aunque una ejecución de GitHub Actions sea reintentada.
+- `MPT_VOICE`
+- `MPT_VOICE_RATE`
+- `YT_STOCK_START_DATE` (`YYYY-MM-DD`, primer día de publicación)
+- `YT_DEFAULT_CATEGORY_ID`
+- `YT_DEFAULT_PLAYLIST_ID`
 
-## Decisión sobre MoneyPrinterTurbo
+## Prueba privada
 
-MoneyPrinterTurbo no reemplaza el diseño de quiz. Se instala fuera del repositorio, bajo `.tools/`, y queda disponible como proveedor alternativo de Edge TTS. Remotion conserva el control del temporizador, las cuatro opciones, el revelado de la respuesta y la miniatura. La publicación sigue usando la API oficial de YouTube en lugar de un servicio intermediario.
+Ejecuta manualmente el workflow **Produce Quiz** con:
 
-MoneyPrinterTurbo está licenciado bajo MIT. Su código no se redistribuye en este repositorio; el setup clona el proyecto original y fija por defecto la revisión auditada indicada en `MPT_REF`. Actualiza esa revisión de forma deliberada cuando quieras incorporar cambios posteriores del proyecto.
+- `stock_index`: `1`
+- `tts`: `mpt`
+- `upload`: `true`
+- `privacy`: `private`
+
+Las ejecuciones manuales conservan sus artefactos durante un día. Las ejecuciones programadas no guardan videos como artefactos porque el resultado ya se publica en YouTube; así se evita acumular almacenamiento.
+
+## Dos publicaciones automáticas por día
+
+El workflow comprueba las **13:00 y 21:00 de Europe/Madrid**, adaptándose al horario de verano. Las cuatro expresiones UTC del workflow permiten identificar las dos horas locales correctas; las otras comprobaciones se descartan.
+
+Después de validar una subida privada, crea esta variable del repositorio:
+
+```text
+YT_AUTOMATION_ENABLED=true
+```
+
+Configura también `YT_STOCK_START_DATE` con el día en que quieras comenzar. Si no se define, se usa `2026-09-11`.
+
+Cada franja selecciona el siguiente índice del catálogo local, genera narración, renderiza y publica como `public`. La subida busca el marcador `[quiz-id:...]` para no duplicar un video si GitHub reintenta una ejecución.
+
+Con 180 elementos hay stock para 90 días. Al terminar, el cron deja de producir para no repetir contenido. Antes de agotarlo debe ampliarse `STOCK_VIDEO_COUNT` y el banco local.
+
+## OpenAI opcional para desarrollo
+
+Los scripts de generación dinámica y OpenAI TTS se mantienen como herramientas opcionales para uso local. No forman parte del workflow gratuito ni son necesarios para operar el canal.
