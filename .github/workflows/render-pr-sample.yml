@@ -1,0 +1,31 @@
+name: Render PR sample
+
+on:
+  push:
+    branches:
+      - feat/free-stock-automation
+
+permissions:
+  contents: read
+
+jobs:
+  sample:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - uses: astral-sh/setup-uv@v6
+      - run: npm install --no-audit --no-fund
+      - run: npm run setup:mpt
+      - name: Render quiz 001 with free voice
+        run: npm run create:video -- --index=1 --tts=mpt --privacy=private
+      - uses: actions/upload-artifact@v4
+        with:
+          name: quiz-001-sample
+          path: |
+            out/videos/quiz-001.mp4
+            out/thumbnails/quiz-001.png
+          retention-days: 1
