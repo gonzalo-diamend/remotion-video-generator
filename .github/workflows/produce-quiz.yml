@@ -9,16 +9,17 @@ on:
     - cron: '0 20 * * *'
   workflow_dispatch:
     inputs:
-      topic:
-        description: 'Tema en español (vacío = quiz de muestra)'
-        required: false
+      stock_index:
+        description: 'Quiz del catálogo local (1-180)'
+        required: true
+        default: '1'
         type: string
       tts:
         description: 'Proveedor de voz'
         required: true
-        default: 'openai'
+        default: 'mpt'
         type: choice
-        options: ['openai', 'auto', 'mpt', 'none']
+        options: ['mpt', 'none']
       upload:
         description: 'Subir a YouTube'
         required: true
@@ -46,11 +47,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Resolve topic and publication plan
+      - name: Resolve stock item and publication plan
         id: plan
         env:
           GITHUB_EVENT_NAME: ${{ github.event_name }}
-          MANUAL_TOPIC: ${{ inputs.topic }}
+          YT_STOCK_START_DATE: ${{ vars.YT_STOCK_START_DATE || '2026-09-11' }}
+          MANUAL_STOCK_INDEX: ${{ inputs.stock_index }}
           MANUAL_TTS: ${{ inputs.tts }}
           MANUAL_UPLOAD: ${{ inputs.upload }}
           MANUAL_PRIVACY: ${{ inputs.privacy }}
@@ -62,28 +64,25 @@ jobs:
           node-version: '20'
 
       - uses: astral-sh/setup-uv@v6
-        if: steps.plan.outputs.should_run == 'true' && (steps.plan.outputs.tts == 'mpt' || steps.plan.outputs.tts == 'auto')
+        if: steps.plan.outputs.should_run == 'true' && steps.plan.outputs.tts == 'mpt'
 
       - name: Install Node dependencies
         if: steps.plan.outputs.should_run == 'true'
         run: npm install --no-audit --no-fund
 
-      - name: Install MoneyPrinterTurbo fallback
-        if: steps.plan.outputs.should_run == 'true' && (steps.plan.outputs.tts == 'mpt' || steps.plan.outputs.tts == 'auto')
+      - name: Install free Edge TTS provider
+        if: steps.plan.outputs.should_run == 'true' && steps.plan.outputs.tts == 'mpt'
         run: npm run setup:mpt
 
       - name: Produce and publish quiz
         if: steps.plan.outputs.should_run == 'true'
         env:
-          QUIZ_TOPIC: ${{ steps.plan.outputs.topic }}
-          QUIZ_ID: ${{ steps.plan.outputs.video_id }}
+          QUIZ_STOCK_INDEX: ${{ steps.plan.outputs.stock_index }}
           QUIZ_TTS: ${{ steps.plan.outputs.tts }}
           QUIZ_UPLOAD: ${{ steps.plan.outputs.upload }}
           QUIZ_PRIVACY: ${{ steps.plan.outputs.privacy }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5-mini' }}
-          OPENAI_TTS_MODEL: ${{ vars.OPENAI_TTS_MODEL || 'gpt-4o-mini-tts' }}
-          OPENAI_TTS_VOICE: ${{ vars.OPENAI_TTS_VOICE || 'coral' }}
+          MPT_VOICE: ${{ vars.MPT_VOICE || 'es-ES-AlvaroNeural' }}
+          MPT_VOICE_RATE: ${{ vars.MPT_VOICE_RATE || '+15%' }}
           YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
           YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
           YT_REDIRECT_URI: ${{ secrets.YT_REDIRECT_URI }}
@@ -91,14 +90,12 @@ jobs:
           YT_DEFAULT_CATEGORY_ID: ${{ vars.YT_DEFAULT_CATEGORY_ID || '27' }}
           YT_DEFAULT_PLAYLIST_ID: ${{ vars.YT_DEFAULT_PLAYLIST_ID }}
         run: |
-          args=("--tts=$QUIZ_TTS" "--privacy=$QUIZ_PRIVACY")
-          if [ -n "$QUIZ_TOPIC" ]; then args+=("--topic=$QUIZ_TOPIC"); fi
-          if [ -n "$QUIZ_ID" ]; then args+=("--id=$QUIZ_ID"); fi
+          args=("--index=$QUIZ_STOCK_INDEX" "--tts=$QUIZ_TTS" "--privacy=$QUIZ_PRIVACY")
           if [ "$QUIZ_UPLOAD" = "true" ]; then args+=("--upload"); fi
           node scripts/create-video.js "${args[@]}"
 
       - name: Upload generated assets
-        if: steps.plan.outputs.should_run == 'true' && always()
+        if: github.event_name == 'workflow_dispatch' && steps.plan.outputs.should_run == 'true' && always()
         uses: actions/upload-artifact@v4
         with:
           name: quiz-${{ github.run_number }}
@@ -107,4 +104,4 @@ jobs:
             out/thumbnails/*.png
             out/jobs/**/manifest.json
             out/jobs/**/quiz.json
-          retention-days: 30
+          retention-days: 1

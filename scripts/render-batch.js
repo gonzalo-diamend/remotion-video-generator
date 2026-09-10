@@ -9,7 +9,7 @@ const retries = retriesArg ? Number(retriesArg.split('=')[1]) : 1;
 const fromArg = args.find((arg) => arg.startsWith('--from='));
 const toArg = args.find((arg) => arg.startsWith('--to='));
 const from = fromArg ? Number(fromArg.split('=')[1]) : 1;
-const to = toArg ? Number(toArg.split('=')[1]) : 50;
+const to = toArg ? Number(toArg.split('=')[1]) : 180;
 const browserExecutable = process.env.REMOTION_BROWSER_EXECUTABLE;
 const reportPathArg = args.find((arg) => arg.startsWith('--report-path='));
 const reportPath = reportPathArg ? reportPathArg.split('=')[1] : `out/reports/render-batch-${mode}-latest.json`;

@@ -197,34 +197,94 @@ const BANK: Record<(typeof TOPICS)[number], BankQuestion[]> = {
 };
 
 const TITLE_PATTERNS = [
-  '12 PREGUNTAS IMPOSIBLES DE {TOPIC} – ¿Podrás acertar todas?',
-  'Solo el 1% puede acertar estas preguntas de {TOPIC}',
-  'Demuestra tu inteligencia con este quiz de {TOPIC}',
+  'Reto #{NUMBER}: 12 preguntas de {TOPIC} y cultura general',
+  'Quiz #{NUMBER}: ¿Cuánto sabes de {TOPIC}?',
+  'Desafío #{NUMBER}: demuestra tu nivel en {TOPIC}',
+  '12 preguntas de {TOPIC} – Reto #{NUMBER}',
 ] as const;
 
-export const generateSpanishQuizVideos = (): QuizVideoPayload[] => {
-  return Array.from({length: 50}, (_, i) => {
-    const topic = TOPICS[i % TOPICS.length];
-    const bank = BANK[topic];
+export const STOCK_VIDEO_COUNT = 180;
 
-    const questions = bank.map((item, idx) => {
-      const difficulty = idx < 4 ? 'easy' : idx < 8 ? 'medium' : 'hard';
+type Difficulty = 'easy' | 'medium' | 'hard';
+type SelectedQuestion = BankQuestion & {difficulty: Difficulty; key: string};
+
+const difficultyOffset: Record<Difficulty, number> = {easy: 0, medium: 4, hard: 8};
+const difficultySize = 4;
+
+// Mulberry32 keeps the catalogue stable across machines and builds.
+const seededRandom = (seed: number) => {
+  let state = seed >>> 0;
+  return () => {
+    state += 0x6d2b79f5;
+    let value = state;
+    value = Math.imul(value ^ (value >>> 15), value | 1);
+    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  };
+};
+
+const shuffle = <T,>(items: T[], seed: number): T[] => {
+  const output = [...items];
+  const random = seededRandom(seed);
+  for (let index = output.length - 1; index > 0; index -= 1) {
+    const target = Math.floor(random() * (index + 1));
+    [output[index], output[target]] = [output[target], output[index]];
+  }
+  return output;
+};
+
+const selectQuestions = (videoIndex: number, primaryTopic: (typeof TOPICS)[number]): SelectedQuestion[] => {
+  const topicIndex = TOPICS.indexOf(primaryTopic);
+  const cycle = Math.floor(videoIndex / TOPICS.length);
+  const difficulties: Difficulty[] = ['easy', 'medium', 'hard'];
+
+  return difficulties.flatMap((difficulty, difficultyIndex) => {
+    const primary = BANK[primaryTopic]
+      .slice(difficultyOffset[difficulty], difficultyOffset[difficulty] + difficultySize)
+      .map((question, index) => ({...question, difficulty, key: `${primaryTopic}:${difficulty}:${index}`}));
+    const omittedIndex = (cycle + topicIndex + difficultyIndex * 2) % difficultySize;
+    const selectedPrimary = primary.filter((_, index) => index !== omittedIndex);
+    const secondaryTopics = TOPICS.filter((topic) => topic !== primaryTopic);
+    const secondaryTopic = secondaryTopics[(cycle * 3 + topicIndex + difficultyIndex * 2) % secondaryTopics.length];
+    const secondaryIndex = (cycle * 5 + topicIndex + difficultyIndex) % difficultySize;
+    const secondaryQuestion = BANK[secondaryTopic][difficultyOffset[difficulty] + secondaryIndex];
+    const secondary = {...secondaryQuestion, difficulty, key: `${secondaryTopic}:${difficulty}:${secondaryIndex}`};
+    return [...selectedPrimary, secondary];
+  });
+};
+
+const shuffleOptions = (question: SelectedQuestion, seed: number): SelectedQuestion => {
+  const correctAnswer = question.options[question.correctIndex];
+  const options = shuffle([...question.options], seed) as [string, string, string, string];
+  return {...question, options, correctIndex: options.indexOf(correctAnswer)};
+};
+
+export const generateSpanishQuizVideos = (): QuizVideoPayload[] => {
+  return Array.from({length: STOCK_VIDEO_COUNT}, (_, i) => {
+    const topic = TOPICS[i % TOPICS.length];
+    const selected = selectQuestions(i, topic);
+
+    const questions = selected.map((selectedQuestion, idx) => {
+      const item = shuffleOptions(selectedQuestion, 3001 + i * 149 + idx * 37);
       return {
         id: idx + 1,
         question: item.question,
         options: item.options,
         correct_index: item.correctIndex,
         explanation: item.explanation,
-        difficulty,
+        difficulty: item.difficulty,
         duration_frames: 360,
       } as const;
     });
 
-    const title = TITLE_PATTERNS[i % TITLE_PATTERNS.length].replace('{TOPIC}', topic.toUpperCase());
+    const number = String(i + 1).padStart(3, '0');
+    const title = TITLE_PATTERNS[i % TITLE_PATTERNS.length]
+      .replace('{TOPIC}', topic.toUpperCase())
+      .replace('{NUMBER}', number);
 
     return {
       video: {
-        id: `quiz-${String(i + 1).padStart(3, '0')}`,
+        id: `quiz-${number}`,
         title,
         description: buildSeoDescription(topic, title),
         tags: buildTags(topic),
@@ -236,7 +296,7 @@ export const generateSpanishQuizVideos = (): QuizVideoPayload[] => {
         target_audience: 'general',
       },
       intro: {
-        text: `¡Bienvenido al reto de ${topic}! Responde rápido y demuestra tu nivel.`,
+        text: `¡Bienvenido al reto de ${topic} y cultura general! Responde rápido y demuestra tu nivel.`,
         duration_frames: 150,
       },
       questions,

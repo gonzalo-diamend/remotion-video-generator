@@ -34,6 +34,6 @@ test('validateShortsDataset rechaza ids duplicados', () => {
 
 test('validateQuizVideoPayloads mantiene el shape esperado', () => {
   const validated = validateQuizVideoPayloads(spanishQuizVideos);
-  assert.equal(validated.length, 50);
+  assert.equal(validated.length, 180);
   assert.equal(validated[0].questions.length, 12);
 });

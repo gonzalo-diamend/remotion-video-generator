@@ -10,7 +10,7 @@ Proyecto de generación de videos programáticos usando [Remotion](https://www.r
 - ✅ Composición de ejemplo "HelloWorld"
 - ✅ Linting y type checking automatizados
 - ✅ Soporte para props dinámicos
-- ✅ Dataset de 50 quizzes en español (formato render-ready para Remotion)
+- ✅ Stock local de 180 quizzes en español, sin APIs de pago
 
 ## 📋 Requisitos Previos
 
@@ -33,14 +33,15 @@ npm install
 
 ### Fábrica completa para The Quiz Channel
 
-El comando principal genera o carga un quiz de 12 preguntas, crea la narración con OpenAI TTS (o MoneyPrinterTurbo como fallback), ajusta los tiempos, renderiza el video y la miniatura gráfica y prepara el manifiesto de YouTube:
+El comando principal carga un quiz de 12 preguntas del stock local, crea narración gratuita con MoneyPrinterTurbo/Edge TTS, ajusta los tiempos, renderiza el video y la miniatura gráfica y prepara el manifiesto de YouTube:
 
 ```bash
 npm install
+npm run setup:mpt
 npm run create:video -- --index=1
 ```
 
-Con `OPENAI_API_KEY` configurada también puede crear contenido nuevo:
+OpenAI permanece disponible únicamente como herramienta opcional para crear contenido nuevo fuera del workflow gratuito:
 
 ```bash
 npm run create:video -- --topic="Historia de España"
@@ -119,7 +120,7 @@ El proyecto incluye un pipeline automatizado con 3 stages:
 ### 3. **Render** - Generación de videos
 - **Manual**: Renderiza video a demanda
 - **Scheduled**: Renderizado automático diario/semanal
-- Guarda videos como artefactos (1 mes)
+- En ejecuciones manuales guarda los videos como artefactos durante un día
 
 ### Configurar el Pipeline
 
@@ -202,8 +203,8 @@ npx remotion render src/index.ts short-hist-roma-01 out/shorts/hist-roma-01.mp4
 npm run render:shorts
 
 # Render incremental (salta outputs existentes) + reintentos
-node scripts/render-batch.js --mode=videos --from=1 --to=50 --retries=2
-node scripts/render-batch.js --mode=thumbs --from=1 --to=50 --retries=2
+node scripts/render-batch.js --mode=videos --from=1 --to=180 --retries=2
+node scripts/render-batch.js --mode=thumbs --from=1 --to=180 --retries=2
 node scripts/render-shorts.js --retries=2
 
 # Reportes de ejecución (JSON latest + histórico NDJSON)
@@ -326,7 +327,7 @@ npm run publish:manifest
 
 # Ejemplo: programar desde fecha/hora inicial, cada 12 horas
 node scripts/build-publish-manifest.js \
-  --from=1 --to=50 \
+  --from=1 --to=180 \
   --schedule-start=2026-02-20T15:00:00Z \
   --interval-hours=12
 ```
@@ -392,10 +393,10 @@ MIT License - ver el archivo [LICENSE](LICENSE) para más detalles.
 
 ## 🧠 Dataset automático de quizzes (ES)
 
-Se agregó un generador de 50 videos de quiz en español con formato estructurado para render:
+Se agregó un generador determinista de 180 videos de quiz en español con formato estructurado para render:
 
 - `src/quiz-schema.ts`: Tipos del payload (`video`, `intro`, `questions`, `outro`, `render`).
-- `src/videos-es.ts`: Generador `spanishQuizVideos` con 50 quizzes únicos y rotación de temas.
+- `src/videos-es.ts`: Generador `spanishQuizVideos` con 180 combinaciones, IDs y títulos únicos.
 - `src/QuizVertical.tsx`: Composición vertical 1080x1920 para render directo de un payload.
 
 Composición registrada:
@@ -408,18 +409,18 @@ Composición registrada:
 Quedó preparado un flujo para renderizar **múltiples videos** y también sus miniaturas:
 
 ```bash
-# Ver todas las composiciones disponibles (incluye QuizVertical-001..050 y QuizThumb-001..050)
+# Ver todas las composiciones disponibles (incluye QuizVertical-001..180 y QuizThumb-001..180)
 npx remotion compositions src/index.ts
 
 # Render batch de videos verticales
 mkdir -p out/videos
-for id in $(seq -f "%03g" 1 50); do
+for id in $(seq -f "%03g" 1 180); do
   npx remotion render src/index.ts "QuizVertical-${id}" "out/videos/quiz-${id}.mp4"
 done
 
 # Render batch de miniaturas
 mkdir -p out/thumbnails
-for id in $(seq -f "%03g" 1 50); do
+for id in $(seq -f "%03g" 1 180); do
   npx remotion still src/index.ts "QuizThumb-${id}" "out/thumbnails/quiz-${id}.png"
 done
 ```

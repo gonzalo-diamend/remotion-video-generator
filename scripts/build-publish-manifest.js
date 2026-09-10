@@ -18,7 +18,7 @@ const parseArgs = () => {
 
   return {
     from: Number(get('from', '1')),
-    to: Number(get('to', '50')),
+    to: Number(get('to', '180')),
     output: get('output', 'out/publish/manifest.json'),
     privacyStatus: get('privacy', process.env.YT_DEFAULT_PRIVACY_STATUS || 'private'),
     scheduleStart: get('schedule-start', process.env.YT_SCHEDULE_START || ''),
