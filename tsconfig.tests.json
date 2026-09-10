@@ -17,6 +17,7 @@
     "src/videos-es.ts",
     "src/quiz-schema.ts",
     "src/quiz-metadata.ts",
-    "src/render-catalog.ts"
+    "src/render-catalog.ts",
+    "src/audio-cues.ts"
   ]
 }

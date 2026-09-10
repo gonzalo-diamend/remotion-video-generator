@@ -9,6 +9,8 @@ import {QuizShortViral} from './components/QuizShortViral';
 import {spanishQuizVideos} from './videos-es';
 import shortsHistoryData from '../data/shorts/history.json';
 import {validateShortsDataset} from './runtime-validation';
+import {NarrationCue} from './audio-cues';
+import {QuizVideoPayload} from './quiz-schema';
 
 const europeQuestions: QuizQuestion[] = [
   {country: 'España', options: ['Madrid', 'Barcelona', 'Sevilla', 'Valencia'], correctIndex: 0},
@@ -112,7 +114,16 @@ export const RemotionRoot: React.FC = () => {
           spanishQuizVideos[0].questions.reduce((acc, q) => acc + q.duration_frames, 0) +
           spanishQuizVideos[0].outro.duration_frames
         }
-        defaultProps={{payload: spanishQuizVideos[0]}}
+        defaultProps={{payload: spanishQuizVideos[0], audioCues: [] as NarrationCue[]}}
+        calculateMetadata={({props}) => {
+          const payload = (props as {payload: QuizVideoPayload}).payload;
+          return {
+            durationInFrames:
+              payload.intro.duration_frames +
+              payload.questions.reduce((acc, q) => acc + q.duration_frames, 0) +
+              payload.outro.duration_frames,
+          };
+        }}
       />
 
       <Composition

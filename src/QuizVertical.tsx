@@ -1,13 +1,34 @@
 import React from 'react';
-import {AbsoluteFill, interpolate, useCurrentFrame} from 'remotion';
+import {
+  AbsoluteFill,
+  Audio,
+  interpolate,
+  Sequence,
+  staticFile,
+  useCurrentFrame,
+  useVideoConfig,
+} from 'remotion';
 import {QuizVideoPayload} from './quiz-schema';
+import {NarrationCue} from './audio-cues';
 
 interface QuizVerticalProps {
   payload: QuizVideoPayload;
+  audioCues?: NarrationCue[];
 }
 
-export const QuizVertical: React.FC<QuizVerticalProps> = ({payload}) => {
+const NarrationAudio: React.FC<{cues: NarrationCue[]}> = ({cues}) => (
+  <>
+    {cues.map((cue) => (
+      <Sequence key={cue.id} from={cue.from}>
+        <Audio src={staticFile(cue.src)} />
+      </Sequence>
+    ))}
+  </>
+);
+
+export const QuizVertical: React.FC<QuizVerticalProps> = ({payload, audioCues = []}) => {
   const frame = useCurrentFrame();
+  const {fps} = useVideoConfig();
   const {intro, questions, outro} = payload;
 
   const quizStart = intro.duration_frames;
@@ -17,6 +38,7 @@ export const QuizVertical: React.FC<QuizVerticalProps> = ({payload}) => {
   if (frame < quizStart) {
     return (
       <AbsoluteFill style={styles.base}>
+        <NarrationAudio cues={audioCues} />
         <div style={styles.centerWrap}>
           <h1 style={styles.title}>{payload.video.title}</h1>
           <p style={styles.subtitle}>{intro.text}</p>
@@ -28,6 +50,7 @@ export const QuizVertical: React.FC<QuizVerticalProps> = ({payload}) => {
   if (frame >= outroStart) {
     return (
       <AbsoluteFill style={styles.base}>
+        <NarrationAudio cues={audioCues} />
         <div style={styles.centerWrap}>
           <h1 style={styles.title}>🎉 Fin del Quiz</h1>
           <p style={styles.subtitle}>{outro.text}</p>
@@ -50,8 +73,9 @@ export const QuizVertical: React.FC<QuizVerticalProps> = ({payload}) => {
     accumulated += question.duration_frames;
   }
 
-  const revealFrom = Math.floor(active.duration_frames * 0.75);
+  const revealFrom = active.answer_reveal_frame ?? Math.floor(active.duration_frames * 0.75);
   const reveal = frameInQuestion >= revealFrom;
+  const secondsRemaining = Math.max(1, Math.ceil((revealFrom - frameInQuestion) / fps));
   const progress =
     1 -
     interpolate(frameInQuestion, [0, active.duration_frames], [0, 1], {
@@ -60,6 +84,7 @@ export const QuizVertical: React.FC<QuizVerticalProps> = ({payload}) => {
 
   return (
     <AbsoluteFill style={styles.base}>
+      <NarrationAudio cues={audioCues} />
       <div style={styles.topRow}>
         <span>
           {payload.video.topic.toUpperCase()} • {active.id}/{questions.length}
@@ -91,10 +116,18 @@ export const QuizVertical: React.FC<QuizVerticalProps> = ({payload}) => {
           })}
         </div>
 
-        {reveal ? <p style={styles.explain}>✅ {active.explanation}</p> : null}
+        {reveal ? <p style={styles.explain}>Respuesta: {active.explanation}</p> : null}
       </div>
 
-      <div style={styles.footer}>#{payload.video.id} · {payload.video.hashtags.join(' ')}</div>
+      <div style={styles.timerArea}>
+        {reveal ? (
+          <div style={styles.revealMessage}>¿La acertaste? Suma 1 punto</div>
+        ) : (
+          <div style={styles.timerCircle}>{secondsRemaining}</div>
+        )}
+      </div>
+
+      <div style={styles.footer}>@thequizchannelytb · Anota tu puntuación</div>
     </AbsoluteFill>
   );
 };
@@ -177,6 +210,36 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 30,
     color: '#86efac',
     fontWeight: 700,
+  },
+  timerArea: {
+    flex: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 250,
+  },
+  timerCircle: {
+    width: 210,
+    height: 210,
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: 112,
+    fontWeight: 900,
+    color: '#facc15',
+    backgroundColor: 'rgba(15, 23, 42, 0.88)',
+    border: '8px solid rgba(250, 204, 21, 0.85)',
+    boxShadow: '0 0 70px rgba(250, 204, 21, 0.28)',
+  },
+  revealMessage: {
+    padding: '24px 34px',
+    borderRadius: 999,
+    fontSize: 36,
+    fontWeight: 800,
+    color: '#052e16',
+    background: 'linear-gradient(135deg, #86efac, #facc15)',
+    boxShadow: '0 18px 50px rgba(74, 222, 128, 0.25)',
   },
   centerWrap: {
     margin: 'auto',

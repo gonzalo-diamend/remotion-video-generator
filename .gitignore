@@ -5,6 +5,9 @@ node_modules/
 dist/
 build/
 out/
+.tools/
+public/generated/
+.test-dist/
 
 # Remotion
 .remotion/

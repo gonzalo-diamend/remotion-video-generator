@@ -13,7 +13,7 @@ export const QuizThumbnail: React.FC<QuizThumbnailProps> = ({payload}) => {
       <div style={styles.badge}>NUEVO QUIZ</div>
       <h1 style={styles.title}>{buildThumbnailTitle(payload)}</h1>
       <p style={styles.subtitle}>¿Aceptas el reto de 12 preguntas?</p>
-      <div style={styles.footer}>@quizchannel • {payload.video.id}</div>
+      <div style={styles.footer}>@thequizchannelytb • {payload.video.id}</div>
     </AbsoluteFill>
   );
 };

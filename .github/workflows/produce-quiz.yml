@@ -1,0 +1,69 @@
+name: Produce Quiz
+
+on:
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: 'Tema en español (vacío = quiz de muestra)'
+        required: false
+        type: string
+      tts:
+        description: 'Generar voz con MoneyPrinterTurbo/Edge TTS'
+        required: true
+        default: 'mpt'
+        type: choice
+        options: ['mpt', 'none']
+      upload:
+        description: 'Subir a YouTube como privado'
+        required: true
+        default: false
+        type: boolean
+
+jobs:
+  produce:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - uses: astral-sh/setup-uv@v6
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Install MoneyPrinterTurbo
+        if: inputs.tts == 'mpt'
+        run: npm run setup:mpt
+
+      - name: Produce quiz
+        env:
+          QUIZ_TOPIC: ${{ inputs.topic }}
+          QUIZ_TTS: ${{ inputs.tts }}
+          QUIZ_UPLOAD: ${{ inputs.upload }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5-mini' }}
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REDIRECT_URI: ${{ secrets.YT_REDIRECT_URI }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+        run: |
+          args=("--tts=$QUIZ_TTS" "--privacy=private")
+          if [ -n "$QUIZ_TOPIC" ]; then args+=("--topic=$QUIZ_TOPIC"); fi
+          if [ "$QUIZ_UPLOAD" = "true" ]; then args+=("--upload"); fi
+          node scripts/create-video.js "${args[@]}"
+
+      - name: Upload generated assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: quiz-${{ github.run_number }}
+          path: |
+            out/videos/*.mp4
+            out/thumbnails/*.png
+            out/jobs/**/manifest.json
+            out/jobs/**/quiz.json
+          retention-days: 30

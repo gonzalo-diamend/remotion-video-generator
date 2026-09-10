@@ -9,11 +9,15 @@
     "test": "eslint src --ext ts,tsx,js,jsx && tsc --noEmit",
     "render:batch": "node scripts/render-batch.js --mode=videos",
     "render:thumbs": "node scripts/render-batch.js --mode=thumbs",
-    "test:unit": "rm -rf .test-dist && tsc -p tsconfig.tests.json && node --test .test-dist/tests/*.test.js",
+    "test:unit": "rm -rf .test-dist && tsc -p tsconfig.tests.json && node --test .test-dist/tests/*.test.js tests-js/*.test.js",
     "render:shorts": "node scripts/render-shorts.js",
     "publish:manifest": "node scripts/build-publish-manifest.js",
     "publish:youtube:dry": "node scripts/youtube-upload.js --dry-run",
-    "publish:youtube": "node scripts/youtube-upload.js"
+    "publish:youtube": "node scripts/youtube-upload.js",
+    "setup:mpt": "node scripts/setup-moneyprinterturbo.js",
+    "generate:quiz": "node scripts/generate-quiz.js",
+    "generate:narration": "node scripts/generate-narration.js",
+    "create:video": "node scripts/create-video.js"
   },
   "repository": {
     "type": "git",

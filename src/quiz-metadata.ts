@@ -17,5 +17,5 @@ export const buildHashtags = (topic: string): string[] => {
 };
 
 export const buildThumbnailTitle = (payload: QuizVideoPayload): string => {
-  return `${payload.video.topic.toUpperCase()} QUIZ`;
+  return `QUIZ DE ${payload.video.topic.toUpperCase()}`;
 };
