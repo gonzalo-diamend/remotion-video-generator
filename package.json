@@ -14,6 +14,8 @@
     "publish:manifest": "node scripts/build-publish-manifest.js",
     "publish:youtube:dry": "node scripts/youtube-upload.js --dry-run",
     "publish:youtube": "node scripts/youtube-upload.js",
+    "youtube:auth": "node scripts/youtube-auth.js",
+    "youtube:check": "node scripts/youtube-check.js",
     "setup:mpt": "node scripts/setup-moneyprinterturbo.js",
     "generate:quiz": "node scripts/generate-quiz.js",
     "generate:narration": "node scripts/generate-narration.js",

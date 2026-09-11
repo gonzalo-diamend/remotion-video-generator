@@ -57,6 +57,38 @@ Solo son necesarios estos cuatro secretos en `Settings → Secrets and variables
 
 No se necesita `OPENAI_API_KEY` para generar, narrar ni publicar el stock.
 
+### Obtener las credenciales y el refresh token
+
+1. Crea un proyecto en Google Cloud y habilita **YouTube Data API v3**.
+2. Configura la pantalla de consentimiento OAuth como **External**. Para que el refresh token no caduque a los siete días, cambia el estado de publicación de **Testing** a **In production** antes de activar el cron.
+3. Crea un cliente OAuth de tipo **Desktop app**.
+4. Copia el archivo de configuración local y completa el client ID y el client secret:
+
+```bash
+cp .env.youtube.example .env.youtube.local
+```
+
+```text
+YT_CLIENT_ID=...
+YT_CLIENT_SECRET=...
+YT_REDIRECT_URI=http://localhost:53682/oauth2callback
+```
+
+5. Autoriza la cuenta que administra `@thequizchannelytb`:
+
+```bash
+npm ci
+npm run youtube:auth
+```
+
+El comando abre Google en el navegador, comprueba el canal seleccionado y muestra los cuatro valores que debes copiar a GitHub Actions Secrets. `.env.youtube.local` está ignorado por Git y nunca debe subirse al repositorio.
+
+Puedes validar nuevamente el token y el canal con:
+
+```bash
+npm run youtube:check
+```
+
 Variables opcionales:
 
 - `MPT_VOICE`
@@ -64,6 +96,8 @@ Variables opcionales:
 - `YT_STOCK_START_DATE` (`YYYY-MM-DD`, primer día de publicación)
 - `YT_DEFAULT_CATEGORY_ID`
 - `YT_DEFAULT_PLAYLIST_ID`
+- `YT_EXPECTED_CHANNEL_ID` (recomendado; evita publicar en otra cuenta por error)
+- `YT_AUTOMATION_PRIVACY` (`private` por defecto; usa `public` después de validar)
 
 ## Prueba privada
 
@@ -86,9 +120,11 @@ Después de validar una subida privada, crea esta variable del repositorio:
 YT_AUTOMATION_ENABLED=true
 ```
 
-Configura también `YT_STOCK_START_DATE` con el día en que quieras comenzar. Si no se define, se usa `2026-09-11`.
+Configura también `YT_STOCK_START_DATE` con el día en que quieras comenzar y conserva `YT_AUTOMATION_PRIVACY=private` durante la primera ejecución programada. Cuando confirmes que el resultado es correcto, cambia esa variable a `public`.
 
-Cada franja selecciona el siguiente índice del catálogo local, genera narración, renderiza y publica como `public`. La subida busca el marcador `[quiz-id:...]` para no duplicar un video si GitHub reintenta una ejecución.
+Cada franja selecciona el siguiente índice del catálogo local, genera narración, renderiza y publica con la privacidad configurada. El selector usa la expresión cron original, por lo que un retraso de GitHub Actions no cambia el video elegido ni hace que se pierda la franja. La subida busca el marcador `[quiz-id:...]` para no duplicar un video si GitHub reintenta una ejecución.
+
+Antes de renderizar, el workflow valida que el refresh token funcione y, si configuraste `YT_EXPECTED_CHANNEL_ID`, que pertenezca exactamente al canal esperado. También instala FFmpeg, necesario para medir la narración.
 
 Con 180 elementos hay stock para 90 días. Al terminar, el cron deja de producir para no repetir contenido. Antes de agotarlo debe ampliarse `STOCK_VIDEO_COUNT` y el banco local.
 

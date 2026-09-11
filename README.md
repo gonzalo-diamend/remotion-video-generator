@@ -299,8 +299,16 @@ npm run render:thumbs
 ### 2) Configurar credenciales OAuth2
 
 1. Crea una app OAuth en Google Cloud con YouTube Data API v3 habilitada.
-2. Obtén `client_id`, `client_secret`, `redirect_uri` y `refresh_token`.
-3. Copia `.env.youtube.example` y exporta variables al shell:
+2. Crea un cliente **Desktop app** y pon la pantalla OAuth **In production** para evitar que el refresh token de una app en Testing caduque a los siete días.
+3. Copia `.env.youtube.example` como `.env.youtube.local`, añade `client_id` y `client_secret`, y ejecuta el asistente:
+
+```bash
+cp .env.youtube.example .env.youtube.local
+npm ci
+npm run youtube:auth
+```
+
+4. Copia en GitHub Actions Secrets los cuatro valores mostrados por el asistente:
 
 ```bash
 export YT_CLIENT_ID="..."
@@ -308,6 +316,8 @@ export YT_CLIENT_SECRET="..."
 export YT_REDIRECT_URI="..."
 export YT_REFRESH_TOKEN="..."
 ```
+
+Comprueba el token y la cuenta seleccionada con `npm run youtube:check`. Consulta [AUTOMATION.md](AUTOMATION.md) para la activación segura en privado y las variables del cron.
 
 Opcionales:
 
