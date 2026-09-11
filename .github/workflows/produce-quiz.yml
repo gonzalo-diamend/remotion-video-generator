@@ -51,7 +51,9 @@ jobs:
         id: plan
         env:
           GITHUB_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_EVENT_SCHEDULE: ${{ github.event.schedule }}
           YT_STOCK_START_DATE: ${{ vars.YT_STOCK_START_DATE || '2026-09-11' }}
+          YT_AUTOMATION_PRIVACY: ${{ vars.YT_AUTOMATION_PRIVACY || 'private' }}
           MANUAL_STOCK_INDEX: ${{ inputs.stock_index }}
           MANUAL_TTS: ${{ inputs.tts }}
           MANUAL_UPLOAD: ${{ inputs.upload }}
@@ -62,13 +64,30 @@ jobs:
         if: steps.plan.outputs.should_run == 'true'
         with:
           node-version: '20'
+          cache: npm
 
       - uses: astral-sh/setup-uv@v6
         if: steps.plan.outputs.should_run == 'true' && steps.plan.outputs.tts == 'mpt'
 
       - name: Install Node dependencies
         if: steps.plan.outputs.should_run == 'true'
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
+
+      - name: Validate YouTube credentials and channel
+        if: steps.plan.outputs.should_run == 'true' && steps.plan.outputs.upload == 'true'
+        env:
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REDIRECT_URI: ${{ secrets.YT_REDIRECT_URI }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+          YT_EXPECTED_CHANNEL_ID: ${{ vars.YT_EXPECTED_CHANNEL_ID }}
+        run: npm run youtube:check
+
+      - name: Install FFmpeg
+        if: steps.plan.outputs.should_run == 'true' && steps.plan.outputs.tts != 'none'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes ffmpeg
 
       - name: Install free Edge TTS provider
         if: steps.plan.outputs.should_run == 'true' && steps.plan.outputs.tts == 'mpt'
@@ -87,6 +106,7 @@ jobs:
           YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
           YT_REDIRECT_URI: ${{ secrets.YT_REDIRECT_URI }}
           YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+          YT_EXPECTED_CHANNEL_ID: ${{ vars.YT_EXPECTED_CHANNEL_ID }}
           YT_DEFAULT_CATEGORY_ID: ${{ vars.YT_DEFAULT_CATEGORY_ID || '27' }}
           YT_DEFAULT_PLAYLIST_ID: ${{ vars.YT_DEFAULT_PLAYLIST_ID }}
         run: |
