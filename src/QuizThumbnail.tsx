@@ -38,6 +38,7 @@ const QuizGraphic: React.FC = () => (
 
 export const QuizThumbnail: React.FC<QuizThumbnailProps> = ({payload}) => {
   const title = buildThumbnailTitle(payload);
+  const questionCount = payload.questions.length;
   const titleSize = title.length > 24 ? 76 : title.length > 18 ? 88 : 100;
 
   return (
@@ -46,7 +47,7 @@ export const QuizThumbnail: React.FC<QuizThumbnailProps> = ({payload}) => {
       <div style={{...styles.glow, ...styles.glowTwo}} />
       <div style={styles.content}>
         <div style={styles.copy}>
-          <div style={styles.badge}>12 PREGUNTAS</div>
+          <div style={styles.badge}>{questionCount} PREGUNTAS</div>
           <h1 style={{...styles.title, fontSize: titleSize}}>{title}</h1>
           <div style={styles.challenge}>¿CUÁNTAS PUEDES ACERTAR?</div>
           <div style={styles.channel}>@thequizchannelytb</div>
