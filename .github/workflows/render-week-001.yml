@@ -1,0 +1,78 @@
+name: Render Week 001
+
+on:
+  push:
+    branches:
+      - codex/render-week-001-actions
+    paths:
+      - .github/workflows/render-week-001.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render-day:
+    strategy:
+      fail-fast: false
+      matrix:
+        day: [1, 2, 3, 4, 5, 6, 7]
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - uses: astral-sh/setup-uv@v6
+
+      - name: Install dependencies
+        run: |
+          npm ci --no-audit --no-fund
+          sudo apt-get update
+          sudo apt-get install --yes ffmpeg
+          npm run setup:mpt
+
+      - name: Build themed batch
+        run: node scripts/generate-weekly-batch.js
+
+      - name: Render two Shorts and one compilation
+        env:
+          MPT_VOICE: es-ES-AlvaroNeural
+          MPT_VOICE_RATE: +15%
+        run: |
+          mapfile -t payloads < <(node -e "const b=require('./data/batches/week-001/batch.json'); for(const x of b.filter(x=>x.day===Number(process.argv[1]))) console.log('data/batches/week-001/'+x.id+'.json')" "${{ matrix.day }}")
+          for payload in "${payloads[@]}"; do
+            if [[ "$payload" == *"/short-"* ]]; then
+              format=short
+            else
+              format=long
+            fi
+            node scripts/create-video.js --input="$payload" --tts=mpt --format="$format"
+          done
+
+      - name: Verify media
+        run: |
+          test "$(find out/shorts out/videos -type f -name '*.mp4' | wc -l)" -eq 3
+          test "$(find out/thumbnails -type f -name '*.png' | wc -l)" -eq 3
+          find out/shorts out/videos -type f -name '*.mp4' -print0 | xargs -0 -n1 ffprobe -v error -show_entries stream=width,height,codec_name -show_entries format=duration -of json
+
+      - name: Assemble upload-ready package
+        run: |
+          mkdir -p "delivery/day-${{ matrix.day }}/videos" "delivery/day-${{ matrix.day }}/miniaturas" "delivery/day-${{ matrix.day }}/info"
+          find out/shorts out/videos -type f -name '*.mp4' -exec cp {} "delivery/day-${{ matrix.day }}/videos/" \;
+          find out/thumbnails -type f -name '*.png' -exec cp {} "delivery/day-${{ matrix.day }}/miniaturas/" \;
+          cp data/batches/week-001/info/*.md "delivery/day-${{ matrix.day }}/info/"
+          cp data/batches/week-001/CALENDARIO-PUBLICACION.csv "delivery/day-${{ matrix.day }}/"
+          cp out/jobs/*/manifest.json "delivery/day-${{ matrix.day }}/info/"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: the-quiz-channel-week-001-day-${{ matrix.day }}
+          path: delivery/day-${{ matrix.day }}
+          retention-days: 3
+          compression-level: 6
