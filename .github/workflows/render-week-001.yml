@@ -1,5 +1,7 @@
 name: Render Week 001
 
+# Generates seven download-ready daily packages.
+
 on:
   push:
     branches:
