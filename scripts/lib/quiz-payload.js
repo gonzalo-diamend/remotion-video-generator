@@ -15,11 +15,11 @@ const slugify = (value) => normalize(value)
   .replace(/^-|-$/g, '')
   .slice(0, 42);
 
-const assertQuizContent = (content) => {
+const assertQuizContent = (content, {minQuestions = QUESTION_COUNT, maxQuestions = QUESTION_COUNT} = {}) => {
   if (!content || typeof content !== 'object') throw new Error('El contenido del quiz debe ser un objeto');
   if (!nonEmpty(content.title) || !nonEmpty(content.description)) throw new Error('El quiz necesita title y description');
-  if (!Array.isArray(content.questions) || content.questions.length !== QUESTION_COUNT) {
-    throw new Error(`El quiz debe contener exactamente ${QUESTION_COUNT} preguntas`);
+  if (!Array.isArray(content.questions) || content.questions.length < minQuestions || content.questions.length > maxQuestions) {
+    throw new Error(`El quiz debe contener entre ${minQuestions} y ${maxQuestions} preguntas`);
   }
 
   const seenQuestions = new Set();
@@ -73,7 +73,7 @@ const assertQuizPayload = (payload) => {
     title: payload.video.title,
     description: payload.video.description,
     questions: payload.questions,
-  });
+  }, {minQuestions: 1, maxQuestions: 20});
   payload.questions.forEach((question, index) => {
     if (question.id !== index + 1) throw new Error(`Pregunta ${index + 1}: id inválido`);
     if (!Number.isInteger(question.duration_frames) || question.duration_frames < 1) {

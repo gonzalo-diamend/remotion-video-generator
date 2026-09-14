@@ -5,6 +5,7 @@ import {HelloWorld} from './HelloWorld';
 import {QuizThumbnail} from './QuizThumbnail';
 import {QuizEurope, QuizQuestion} from './QuizEurope';
 import {QuizVertical} from './QuizVertical';
+import {QuizLandscape} from './QuizLandscape';
 import {QuizShortViral} from './components/QuizShortViral';
 import {spanishQuizVideos} from './videos-es';
 import shortsHistoryData from '../data/shorts/history.json';
@@ -109,6 +110,29 @@ export const RemotionRoot: React.FC = () => {
         fps={30}
         width={1080}
         height={1920}
+        durationInFrames={
+          spanishQuizVideos[0].intro.duration_frames +
+          spanishQuizVideos[0].questions.reduce((acc, q) => acc + q.duration_frames, 0) +
+          spanishQuizVideos[0].outro.duration_frames
+        }
+        defaultProps={{payload: spanishQuizVideos[0], audioCues: [] as NarrationCue[]}}
+        calculateMetadata={({props}) => {
+          const payload = (props as {payload: QuizVideoPayload}).payload;
+          return {
+            durationInFrames:
+              payload.intro.duration_frames +
+              payload.questions.reduce((acc, q) => acc + q.duration_frames, 0) +
+              payload.outro.duration_frames,
+          };
+        }}
+      />
+
+      <Composition
+        id="QuizLandscapeAuto"
+        component={QuizLandscape as unknown as React.ComponentType<Record<string, unknown>>}
+        fps={30}
+        width={1920}
+        height={1080}
         durationInFrames={
           spanishQuizVideos[0].intro.duration_frames +
           spanishQuizVideos[0].questions.reduce((acc, q) => acc + q.duration_frames, 0) +

@@ -19,6 +19,19 @@ const run = (command, args, options = {}) => {
   if ((result.status ?? 1) !== 0) throw new Error(`${command} terminó con código ${result.status}`);
 };
 
+const runWithRetries = (command, args, options = {}, attempts = 4) => {
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    const result = spawnSync(command, args, {stdio: 'inherit', ...options});
+    if ((result.status ?? 1) === 0) return;
+    if (attempt < attempts) {
+      const delayMs = attempt * 5000;
+      console.warn(`[narration] intento ${attempt}/${attempts} falló; reintentando en ${delayMs / 1000}s`);
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, delayMs);
+    }
+  }
+  throw new Error(`${command} falló después de ${attempts} intentos`);
+};
+
 const durationSeconds = (filePath) => {
   const result = spawnSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'default=nw=1:nk=1', filePath], {encoding: 'utf8'});
   if ((result.status ?? 1) !== 0) throw new Error(`No se pudo medir ${filePath}`);
@@ -92,7 +105,7 @@ const main = async () => {
         if (!fs.existsSync(path.join(mptDir, 'pyproject.toml'))) {
           throw new Error('El fallback de Edge TTS requiere npm run setup:mpt');
         }
-        run(uv, ['run', '--project', mptDir, 'python', '-m', 'edge_tts', '--voice', mptVoice, '--rate', rate, '--text', item.text, '--write-media', output]);
+        runWithRetries(uv, ['run', '--project', mptDir, 'python', '-m', 'edge_tts', '--voice', mptVoice, '--rate', rate, '--text', item.text, '--write-media', output]);
       }
     }
     measured.set(item.id, durationSeconds(output));
