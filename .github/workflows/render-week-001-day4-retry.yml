@@ -1,0 +1,75 @@
+name: Render Week 001 Day 4 Retry
+
+# Generates seven download-ready daily packages.
+
+on:
+  push:
+    branches:
+      - codex/render-week-001-actions
+    paths:
+      - .github/workflows/render-week-001-day4-retry.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render-day:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - uses: astral-sh/setup-uv@v6
+
+      - name: Install dependencies
+        run: |
+          npm ci --no-audit --no-fund
+          sudo apt-get update
+          sudo apt-get install --yes ffmpeg
+          npm run setup:mpt
+
+      - name: Build themed batch
+        run: node scripts/generate-weekly-batch.js
+
+      - name: Render two Shorts and one compilation
+        env:
+          MPT_VOICE: es-ES-AlvaroNeural
+          MPT_VOICE_RATE: +15%
+        run: |
+          mapfile -t payloads < <(node -e "const b=require('./data/batches/week-001/batch.json'); for(const x of b.filter(x=>x.day===Number(process.argv[1]))) console.log('data/batches/week-001/'+x.id+'.json')" "4")
+          for payload in "${payloads[@]}"; do
+            if [[ "$payload" == *"/short-"* ]]; then
+              format=short
+            else
+              format=long
+            fi
+            node scripts/create-video.js --input="$payload" --tts=mpt --format="$format"
+          done
+
+      - name: Verify media
+        run: |
+          test "$(find out/shorts out/videos -type f -name '*.mp4' | wc -l)" -eq 3
+          test "$(find out/thumbnails -type f -name '*.png' | wc -l)" -eq 3
+          find out/shorts out/videos -type f -name '*.mp4' -print0 | xargs -0 -n1 ffprobe -v error -show_entries stream=width,height,codec_name -show_entries format=duration -of json
+
+      - name: Assemble upload-ready package
+        run: |
+          mkdir -p "delivery/day-4/videos" "delivery/day-4/miniaturas" "delivery/day-4/info"
+          find out/shorts out/videos -type f -name '*.mp4' -exec cp {} "delivery/day-4/videos/" \;
+          find out/thumbnails -type f -name '*.png' -exec cp {} "delivery/day-4/miniaturas/" \;
+          cp data/batches/week-001/info/*.md "delivery/day-4/info/"
+          cp data/batches/week-001/CALENDARIO-PUBLICACION.csv "delivery/day-4/"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: the-quiz-channel-week-001-day-4
+          path: delivery/day-4
+          retention-days: 3
+          compression-level: 6
