@@ -27,10 +27,12 @@ try {
   const requestedId = getArg('id');
   const builtinIndex = Number(getArg('index', '1'));
   const tts = getArg('tts', 'mpt');
+  const format = getArg('format', 'long');
   const privacyStatus = getArg('privacy', 'private');
   const force = hasFlag('force');
 
   if (!['openai', 'mpt', 'auto', 'none'].includes(tts)) throw new Error('--tts debe ser openai, mpt, auto o none');
+  if (!['short', 'long'].includes(format)) throw new Error('--format debe ser short o long');
   if (!['private', 'unlisted', 'public'].includes(privacyStatus)) throw new Error('--privacy inválido');
 
   let payload;
@@ -75,13 +77,15 @@ try {
     writeJson(propsPath, props);
   }
 
-  const videoPath = path.join(projectRoot, 'out', 'videos', `${payload.video.id}.mp4`);
+  const videoFolder = format === 'short' ? 'shorts' : 'videos';
+  const videoPath = path.join(projectRoot, 'out', videoFolder, `${payload.video.id}.mp4`);
   const thumbnailPath = path.join(projectRoot, 'out', 'thumbnails', `${payload.video.id}.png`);
   fs.mkdirSync(path.dirname(videoPath), {recursive: true});
   fs.mkdirSync(path.dirname(thumbnailPath), {recursive: true});
 
   if (!fs.existsSync(videoPath) || force) {
-    const args = ['remotion', 'render', 'src/index.ts', 'QuizVerticalAuto', videoPath, `--props=${JSON.stringify(props)}`, '--codec=h264', '--crf=20'];
+    const composition = format === 'short' ? 'QuizVerticalAuto' : 'QuizLandscapeAuto';
+    const args = ['remotion', 'render', 'src/index.ts', composition, videoPath, `--props=${JSON.stringify(props)}`, '--codec=h264', '--crf=20', '--concurrency=2', '--timeout=120000'];
     if (process.env.REMOTION_BROWSER_EXECUTABLE) args.push('--browser-executable', process.env.REMOTION_BROWSER_EXECUTABLE);
     run('npx', args);
   } else {
@@ -89,7 +93,7 @@ try {
   }
 
   if (!fs.existsSync(thumbnailPath) || force) {
-    const args = ['remotion', 'still', 'src/index.ts', 'QuizThumbnailAuto', thumbnailPath, `--props=${JSON.stringify({payload})}`];
+    const args = ['remotion', 'still', 'src/index.ts', 'QuizThumbnailAuto', thumbnailPath, `--props=${JSON.stringify({payload})}`, '--timeout=120000'];
     if (process.env.REMOTION_BROWSER_EXECUTABLE) args.push('--browser-executable', process.env.REMOTION_BROWSER_EXECUTABLE);
     run('npx', args);
   }
