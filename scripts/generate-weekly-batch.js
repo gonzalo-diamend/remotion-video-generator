@@ -39,12 +39,20 @@ const topicTags = {
 const baseTags = ['quiz','trivia','preguntas y respuestas','cultura general','juego de preguntas','reto mental','desafío de conocimiento','The Quiz Channel','quiz en español'];
 const hashtagsFor = (slug, short) => short ? ['#Shorts','#Quiz',`#${slug.replace(/-/g, '')}`] : ['#Quiz','#Trivia',`#${slug.replace(/-/g, '')}`];
 
-const makeQuestions = (topic, start) => sourceFor(topic).questions.slice(start, start + 4).map((q, i) => ({
-  ...structuredClone(q),
-  id: i + 1,
-  duration_frames: 300,
-  answer_reveal_frame: 210,
-}));
+const makeQuestions = (topic, start, excluded = []) => {
+  const source = sourceFor(topic).questions;
+  const seen = new Set(excluded.map((q) => q.question.toLocaleLowerCase('es')));
+  const selected = [];
+  for (let offset = 0; offset < source.length && selected.length < 4; offset += 1) {
+    const question = source[(start + offset) % source.length];
+    const key = question.question.toLocaleLowerCase('es');
+    if (seen.has(key)) continue;
+    seen.add(key);
+    selected.push({...structuredClone(question), id: selected.length + 1, duration_frames: 300, answer_reveal_frame: 210});
+  }
+  if (selected.length !== 4) throw new Error(`No hay cuatro preguntas únicas para ${topic}`);
+  return selected;
+};
 
 const makePayload = ({id, theme, subtheme, slug, questions, short}) => {
   const count = questions.length;
@@ -95,7 +103,7 @@ for (const day of days) {
   const number = String(day.day).padStart(3, '0');
   const sameSource = day.a[0] === day.b[0];
   const qa = makeQuestions(day.a[0], 0);
-  const qb = makeQuestions(day.b[0], sameSource ? 4 : 0);
+  const qb = makeQuestions(day.b[0], sameSource ? 4 : 0, qa);
   const shortA = makePayload({id: `short-${number}-a-${day.slug}`, theme: day.theme, subtheme: day.a[1], slug: day.slug, questions: qa, short: true});
   const shortB = makePayload({id: `short-${number}-b-${day.slug}`, theme: day.theme, subtheme: day.b[1], slug: day.slug, questions: qb, short: true});
   const long = makePayload({id: `recopilatorio-${number}-${day.slug}`, theme: day.theme, subtheme: day.theme, slug: day.slug, questions: [...qa, ...qb], short: false});
